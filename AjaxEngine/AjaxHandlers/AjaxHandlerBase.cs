@@ -15,19 +15,27 @@ namespace AjaxEngine.AjaxHandlers
 {
     public class AjaxHandlerBase : IAjaxHandler
     {
-        public virtual bool ThrowError { get; set; }
-        public string InvokeMethodName { get; set; }
-        public string JsonpCallbackName { get; set; }
-        public IServiceEntity ServiceEntity { get; set; }
-        public ISerializer Serializer
+        protected virtual Error HandleError(Exception ex)
+        {
+            if (this.ThrowError)
+                throw ex;
+            else
+                return new Error(ex.Message, ex.Source, ex.TargetSite.Name);
+        }
+        protected virtual bool ThrowError { get; set; }
+        protected string InvokeMethodName { get; set; }
+        protected string JsonpCallbackName { get; set; }
+        protected string JsonpEnabled { get; set; }
+        protected IServiceEntity ServiceEntity { get; set; }
+        protected ISerializer Serializer
         {
             get
             {
                 return Gloabl.Serializer;
             }
         }
-        public HttpContext Context { get; set; }
-        public string AgentScriptNamespace { get; set; }
+        protected HttpContext Context { get; set; }
+        protected string AgentScriptNamespace { get; set; }
         public virtual bool IsReusable
         {
             get
@@ -80,7 +88,7 @@ namespace AjaxEngine.AjaxHandlers
             this.JsonpCallbackName = context.Request[Const.CALLBACK];
             if (invoke && !string.IsNullOrEmpty(this.InvokeMethodName))
             {
-                object result = this.InvokeEntityMethod(this.InvokeMethodName);
+                object result = this.InvokeEntityMethod(this.InvokeMethodName, context.Request.HttpMethod);
                 context.Response.Clear();
                 if (string.IsNullOrEmpty(this.JsonpCallbackName))
                     context.Response.Write(this.Serializer.Serialize(result));
@@ -90,43 +98,42 @@ namespace AjaxEngine.AjaxHandlers
             }
             else
             {
-                if (this.ThrowError)
-                    throw new Exception("没有找到指定调用方法");
-                else
-                {
-                    context.Response.Clear();
-                    context.Response.Write(this.Serializer.Serialize("没有找到指定调用方法"));
-                    context.Response.End();
-                }
+                context.Response.Clear();
+                context.Response.Write(this.Serializer.Serialize(HandleError(new Exception("没有找到指定调用方法"))));
+                context.Response.End();
             }
         }
-        public virtual object InvokeEntityMethod(string methodName)
+        protected virtual object InvokeEntityMethod(string methodName, string httpMethod)
         {
-            try
+
+            MethodInfo methodInfo = MethodCache.GetMethodInfo(this.ServiceEntity.GetType(), methodName);
+            string allowHttpMethods = null;
+            if (methodInfo != null && this.IsAjaxMethod(methodInfo, ref allowHttpMethods))
             {
-                MethodInfo methodInfo = MethodCache.GetMethodInfo(this.ServiceEntity.GetType(), methodName);
-                if (methodInfo != null && this.IsAjaxMethod(methodInfo))
+                if (!string.IsNullOrEmpty(allowHttpMethods) && allowHttpMethods.ToUpper().Split(',').Contains(httpMethod.ToUpper()))
                 {
-                    ParameterInfo[] pareameterInfos = ParameterCache.GetPropertyInfo(methodInfo);
-                    object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
-                    return methodInfo.Invoke(this.ServiceEntity, parameterValueList);
+                    try
+                    {
+                        ParameterInfo[] pareameterInfos = ParameterCache.GetPropertyInfo(methodInfo);
+                        object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
+                        return methodInfo.Invoke(this.ServiceEntity, parameterValueList);
+                    }
+                    catch (Exception ex)
+                    {
+                        return HandleError(ex);
+                    }
                 }
-                else if (this.ThrowError)
-                    throw new Exception("没有找到指定调用方法");
                 else
                 {
-                    return new Error("没有找到指定调用方法", "", "");
+                    return HandleError(new Exception("不允许用\"" + httpMethod + "\"方式调用"));
                 }
             }
-            catch (Exception e)
+            else
             {
-                if (this.ThrowError)
-                    throw e;
-                else
-                    return new Error(e.Message, e.Source, e.TargetSite.Name);
+                return HandleError(new Exception("没有找到指定调用方法"));
             }
         }
-        public virtual object[] GetEntityParameterValueList(ParameterInfo[] pareameterInfos)
+        protected virtual object[] GetEntityParameterValueList(ParameterInfo[] pareameterInfos)
         {
             List<object> valueList = new List<object>();
             foreach (ParameterInfo pi in pareameterInfos)
@@ -145,11 +152,13 @@ namespace AjaxEngine.AjaxHandlers
             else
                 return null;
         }
-        public virtual bool IsAjaxMethod(MethodInfo methodInfo)
+        protected virtual bool IsAjaxMethod(MethodInfo methodInfo, ref string httpMethod)
         {
-            return methodInfo.GetAttribute<AjaxMethodAttribute>() != null;
+            AjaxMethodAttribute ajaxMethod = methodInfo.GetAttribute<AjaxMethodAttribute>();
+            httpMethod = ajaxMethod.HttpMethod;
+            return ajaxMethod != null;
         }
-        public virtual bool PreInvoke()
+        protected virtual bool PreInvoke()
         {
             return true;
         }

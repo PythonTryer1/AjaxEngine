@@ -26,7 +26,7 @@ namespace AjaxEngine.Demo
     public class Handler1 : AjaxHandlerBase
     {
 
-        public override bool PreInvoke()
+        protected override bool PreInvoke()
         {
             this.ThrowError = false;
             return base.PreInvoke();
@@ -34,7 +34,7 @@ namespace AjaxEngine.Demo
         [Summary(Description = "这是一个添加方法",
                  Return = "你好中国",
                  Parameters = "t:我是参数")]
-        [AjaxMethod]
+        [AjaxMethod(HttpMethod="GET")]
         public T add(T t)
         {
             t.t1++;

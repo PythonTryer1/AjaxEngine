@@ -46,7 +46,7 @@ namespace AjaxEngine.AjaxPages
         {
             get
             {
-                return this.Page.Request["AjaxRequest"] != null && this.Page.Request["NoAjaxRequest"] == null;
+                return this.Page.Request["ajax-request"] != null;
             }
         }
         public bool IsAjaxPostBack
@@ -293,12 +293,12 @@ namespace AjaxEngine.AjaxPages
         {
             try
             {
-                ((WebControl)control).Attributes.Add("notAjax", "notAjax");
+                ((WebControl)control).Attributes.Add("ajax-disabled", "yes");
             }
             catch { }
             try
             {
-                ((HtmlControl)control).Attributes.Add("notAjax", "notAjax");
+                ((HtmlControl)control).Attributes.Add("ajax-disabled", "yes");
             }
             catch { }
         }
@@ -309,12 +309,12 @@ namespace AjaxEngine.AjaxPages
         {
             try
             {
-                ((WebControl)control).Attributes.Remove("notAjax");
+                ((WebControl)control).Attributes.Remove("ajax-disabled");
             }
             catch { }
             try
             {
-                ((HtmlControl)control).Attributes.Remove("notAjax");
+                ((HtmlControl)control).Attributes.Remove("ajax-disabled");
             }
             catch { }
         }
@@ -344,7 +344,7 @@ namespace AjaxEngine.AjaxPages
 
         #endregion
 
-        #region 基它功能相关方法
+        #region 其它功能相关方法
 
         /// <summary>
         /// 取得页面文件名

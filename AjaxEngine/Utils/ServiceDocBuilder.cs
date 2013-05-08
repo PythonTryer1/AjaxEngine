@@ -57,12 +57,13 @@ namespace AjaxEngine.Utils
                 string methodDescription = "";
                 string methodReturn = "";
                 Dictionary<string, string> methodParameters = new Dictionary<string, string>();
-                SummaryAttribute methodSumary = method.GetAttribute<SummaryAttribute>();
-                if (methodSumary != null)
+                SummaryAttribute methodSummary = method.GetAttribute<SummaryAttribute>();
+                AjaxMethodAttribute ajaxMethod = method.GetAttribute<AjaxMethodAttribute>();
+                if (methodSummary != null)
                 {
-                    methodDescription = methodSumary.Description ?? "";
-                    methodReturn = methodSumary.Return ?? "";
-                    string[] parameterDescArray = (methodSumary.Parameters ?? "").Split(',');
+                    methodDescription = methodSummary.Description ?? "";
+                    methodReturn = methodSummary.Return ?? "";
+                    string[] parameterDescArray = (methodSummary.Parameters ?? "").Split(',');
                     foreach (string parameterDesc in parameterDescArray)
                     {
                         string[] desc = parameterDesc.Split(':');
@@ -70,7 +71,7 @@ namespace AjaxEngine.Utils
                             methodParameters.Add(desc[0], desc[1]);
                     }
                 }
-                buffer.Append(@"<form class='methodForm' target='_blank' method='post'>
+                buffer.Append(@"<form class='methodForm' target='_blank' method='{httpMethod}'>
 <strong class='methodName'>{method}方法</strong>
 说明 : {methodSumary}<br/>
 返回 : {return}<br/>
@@ -90,7 +91,7 @@ namespace AjaxEngine.Utils
         <th style='width:255px;'>
             说明
         </th>
-    </tr>".Replace("{method}", method.Name).Replace("{return}", method.ReturnType.FullName + "," + methodReturn).Replace("{methodSumary}", methodDescription));
+    </tr>".Replace("{method}", method.Name).Replace("{return}", method.ReturnType.FullName + "," + methodReturn).Replace("{methodSumary}", methodDescription)).Replace("{httpMethod}",ajaxMethod.HttpMethod.Split(',')[0]);
                 ParameterInfo[] parameterList = method.GetParameters();
                 foreach (ParameterInfo parameter in parameterList)
                 {

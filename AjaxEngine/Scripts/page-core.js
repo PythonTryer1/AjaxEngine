@@ -29,9 +29,9 @@ if (navigator.userAgent.indexOf("Gecko/") > -1) {
 //---
 window.AjaxEngine = window.AjaxEngine || {};
 (function (owner) {
-    owner.onRequestBegin =owner.onRequestBegin || window.onRequestBegin;
-    owner.onRequestEnd = owner.onRequestEnd||window.onRequestEnd;
-    owner.wrapUrl =owner.wrapUr || function (url) {
+    owner.onRequestBegin = owner.onRequestBegin || window.onRequestBegin;
+    owner.onRequestEnd = owner.onRequestEnd || window.onRequestEnd;
+    owner.wrapUrl = owner.wrapUr || function (url) {
         var app = this;
         if (url.indexOf('?') > -1)
             url += "&__t=" + Math.random();
@@ -39,11 +39,11 @@ window.AjaxEngine = window.AjaxEngine || {};
             url += "?__t=" + Math.random();
         return url;
     };
-    owner.stringToJson =owner.stringToJson || function (str) {
+    owner.stringToJson = owner.stringToJson || function (str) {
         var jsonObject = (new Function("return " + str + ";"))();
         return jsonObject;
     };
-    owner.jsonToString =owner.jsonToString|| function (obj) {
+    owner.jsonToString = owner.jsonToString || function (obj) {
         var THIS = this;
         switch (typeof (obj)) {
             case 'string':
@@ -74,10 +74,12 @@ window.AjaxEngine = window.AjaxEngine || {};
                 return obj;
         }
     };
-    owner.$ = owner.$|| function (id) {
-        return document.getElementById(id);
+    owner.$ = owner.$ || function (id) {
+        var element = document.getElementById(id) || document.getElementsByName(id);
+        element = element[0] || element;
+        return element;
     };
-    owner.ajax =owner.ajax || $.ajax;
+    owner.ajax = owner.ajax || $.ajax;
     owner.serializeData = owner.serializeData || function () {
         var formData = $(theForm).serializeArray();
         theForm.__EVENTTARGET.value = "";
@@ -88,8 +90,8 @@ window.AjaxEngine = window.AjaxEngine || {};
         if (owner.onRequestBegin)
             owner.onRequestBegin();
         var formData = owner.serializeData();
-        formData["AjaxRequest"] = "true";
-        formData.push({ "name": "AjaxRequest", "value": "true" });
+        formData["ajax-request"] = "yes";
+        formData.push({ "name": "ajax-request", "value": "true" });
         for (var name in data) {
             var value = (typeof data[name] === "string") ? data[name] : owner.jsonToString(data[name]);
             formData.push({ "name": name, "value": value });
@@ -98,7 +100,7 @@ window.AjaxEngine = window.AjaxEngine || {};
         var reutrnResult = null;
         owner.ajax({
             type: "post",
-            url: owner.wrapUrl(location.href.indexOf('?')>-1?location.href:theForm.action),
+            url: owner.wrapUrl(location.href.indexOf('?') > -1 ? location.href : theForm.action),
             async: callback != null,
             cache: false,
             data: formData,
@@ -111,7 +113,7 @@ window.AjaxEngine = window.AjaxEngine || {};
         });
         return reutrnResult;
     };
-    owner.processResult =  owner.processResult || function (msgList) {
+    owner.processResult = owner.processResult || function (msgList) {
         var returnResult = null;
         if (!msgList) return returnResult;
         for (var i in msgList) {
@@ -133,12 +135,12 @@ window.AjaxEngine = window.AjaxEngine || {};
             owner.onRequestEnd();
         return returnResult;
     };
-    owner.doPostBack =  owner.doPostBack || function (eventTarget, eventArgument) {
+    owner.doPostBack = owner.doPostBack || function (eventTarget, eventArgument) {
         if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
             theForm.__EVENTTARGET.value = eventTarget;
             theForm.__EVENTARGUMENT.value = eventArgument;
             var target = owner.$(eventTarget);
-            if (target && target.getAttribute && target.getAttribute("notAjax") == "notAjax") {
+            if (target && target.getAttribute && target.getAttribute("ajax-disabled") == "yes") {
                 theForm.submit();
             }
             else {
@@ -149,4 +151,4 @@ window.AjaxEngine = window.AjaxEngine || {};
     //
     if (__ControlAjaxEnabled)
         __doPostBack = owner.doPostBack;
-} (window.AjaxEngine));
+}(window.AjaxEngine));

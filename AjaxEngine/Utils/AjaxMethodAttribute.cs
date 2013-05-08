@@ -19,11 +19,25 @@ namespace AjaxEngine.Utils
     [Serializable]
     public sealed class AjaxMethodAttribute : System.Attribute
     {
+        private string _HttpMethod = "POST,GET";
+        public string HttpMethod
+        {
+            get
+            {
+                return _HttpMethod ?? "";
+            }
+            set
+            {
+                _HttpMethod = (value ?? "");
+            }
+        }
+
         /// <summary>
         /// 构造
         /// </summary>
         public AjaxMethodAttribute()
         {
+
         }
     }
 }
