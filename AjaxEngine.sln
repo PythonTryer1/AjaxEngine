@@ -1,23 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjaxEngine", "AjaxEngine\AjaxEngine.csproj", "{AE44B8E3-4428-4AEA-851A-154F30FC07C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjaxEngine.Demo", "AjaxEngine.Demo\AjaxEngine.Demo.csproj", "{7CA599C9-083F-4BE8-9F41-16525B77BE73}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs08
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = AjaxEngine\\AjaxEngine.csproj
-		SccProjectName1 = AjaxEngine
-		SccLocalPath1 = AjaxEngine
-		SccProjectUniqueName2 = AjaxEngine.Demo\\AjaxEngine.Demo.csproj
-		SccProjectName2 = AjaxEngine.Demo
-		SccLocalPath2 = AjaxEngine.Demo
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
