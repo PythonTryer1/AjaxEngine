@@ -62,8 +62,9 @@ window.AjaxEngine = window.AjaxEngine || {};
                     return 'null';
                 } else {
                     var string = [];
-                    for (var p in obj)
+                    for (var p in obj) {
                         string.push(THIS.jsonToString(p) + ':' + THIS.jsonToString(obj[p]));
+                    }
                     return '{' + string.join(',') + '}';
                 }
             case 'number':
@@ -75,9 +76,15 @@ window.AjaxEngine = window.AjaxEngine || {};
         }
     };
     owner.$ = owner.$ || function (id) {
-        var element = document.getElementById(id) || document.getElementsByName(id);
-        element = element[0] || element;
-        return element;
+        var element = document.getElementById(id);
+        if (element) {
+            return element;
+        }
+        else {
+            element = document.getElementsByName(id)
+            element = element[0] || element;
+            return element;
+        }
     };
     owner.ajax = owner.ajax || $.ajax;
     owner.serializeData = owner.serializeData || function () {
@@ -107,8 +114,9 @@ window.AjaxEngine = window.AjaxEngine || {};
             dataType: "json",
             success: function (result) {
                 reutrnResult = owner.processResult(result);
-                if (callback)
+                if (callback) {
                     callback(reutrnResult);
+                }
             }
         });
         return reutrnResult;
@@ -123,16 +131,17 @@ window.AjaxEngine = window.AjaxEngine || {};
             }
             else if (msg.Type === 1) {
                 var element = AjaxEngine.$(msg.Id);
-                if (element && element.outerHTML)
+                if (element && element.outerHTML) {
                     element.outerHTML = msg.Context;
+                }
             }
             else if (msg.Type === 2) {
-                //window.console.log(msg.Context);
                 eval(msg.Context);
             }
         }
-        if (owner.onRequestEnd)
+        if (owner.onRequestEnd) {
             owner.onRequestEnd();
+        }
         return returnResult;
     };
     owner.doPostBack = owner.doPostBack || function (eventTarget, eventArgument) {
@@ -151,4 +160,5 @@ window.AjaxEngine = window.AjaxEngine || {};
     //
     if (__ControlAjaxEnabled)
         __doPostBack = owner.doPostBack;
+
 }(window.AjaxEngine));

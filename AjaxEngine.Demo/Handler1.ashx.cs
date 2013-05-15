@@ -13,7 +13,8 @@ namespace AjaxEngine.Demo
     {
         public int t1 { get; set; }
         public int t2 { get; set; }
-        public T() {
+        public T()
+        {
             this.t1 = 1;
             this.t2 = 2;
         }
@@ -26,15 +27,13 @@ namespace AjaxEngine.Demo
     public class Handler1 : AjaxHandlerBase
     {
 
-        protected override bool PreInvoke()
+        protected override void PreInvoke(PreInvokeEventArgs e)
         {
-            this.ThrowError = false;
-            return base.PreInvoke();
         }
         [Summary(Description = "这是一个添加方法",
                  Return = "你好中国",
                  Parameters = "t:我是参数")]
-        [AjaxMethod(HttpMethod="GET")]
+        [AjaxMethod(HttpMethod = "POST")]
         public T add(T t)
         {
             t.t1++;

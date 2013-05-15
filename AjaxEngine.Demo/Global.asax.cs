@@ -33,10 +33,7 @@ namespace AjaxEngine.Demo
 
         protected void Application_Error(object sender, EventArgs e)
         {
-            this.Server.ClearError();
-            Serializes.JsonSerializer serializer = new Serializes.JsonSerializer();
-            this.Context.Response.Write(serializer.Serialize(new Error("a","a", "A")));
-            this.Context.Response.End();
+            
         }
 
         protected void Session_End(object sender, EventArgs e)

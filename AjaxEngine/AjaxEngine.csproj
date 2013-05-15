@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AjaxHandlers\IAjaxHandler.cs" />
+    <Compile Include="AjaxHandlers\PreInvokeEventArgs.cs" />
     <Compile Include="Gloabl.cs" />
     <Compile Include="Utils\AjaxMethodAttribute.cs" />
     <Compile Include="Utils\Const.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="AjaxPages\HtmlElement.cs" />
     <Compile Include="AjaxPages\HtmlElementCollection.cs" />
     <Compile Include="AjaxPages\IAjaxPage.cs" />
-    <Compile Include="Utils\Error.cs" />
     <Compile Include="AjaxHandlers\IServiceEntity.cs" />
     <Compile Include="AjaxHandlers\AjaxHandlerBase.cs" />
     <Compile Include="AjaxPages\Message.cs" />

@@ -32,7 +32,6 @@ namespace AjaxEngine.AjaxPages
     public class AjaxPageEngine : IRequiresSessionState
     {
         #region 属性
-        public bool ThrowError { get; set; }
         public string AjaxMethodNamespace { get; set; }
         public bool AutoImportJQuery { get; set; }
         public string InvokeMethodName { get; set; }
@@ -102,28 +101,16 @@ namespace AjaxEngine.AjaxPages
         #region 核心功能相关方法
         private object InvokeEntityMethod(string methodName)
         {
-            try
+            MethodInfo methodInfo = MethodCache.GetMethodInfo(this.Page.GetType(), methodName);
+            if (methodInfo != null && this.IsAjaxMethod(methodInfo))
             {
-                MethodInfo methodInfo = MethodCache.GetMethodInfo(this.Page.GetType(), methodName);
-                if (methodInfo != null && this.IsAjaxMethod(methodInfo))
-                {
-                    ParameterInfo[] pareameterInfos = ParameterCache.GetPropertyInfo(methodInfo);
-                    object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
-                    return methodInfo.Invoke(this.Page, parameterValueList);
-                }
-                else if (this.ThrowError)
-                    throw new Exception("没有找到指定调用方法");
-                else
-                {
-                    return new Error("没有找到指定调用方法", "", "");
-                }
+                ParameterInfo[] pareameterInfos = ParameterCache.GetPropertyInfo(methodInfo);
+                object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
+                return methodInfo.Invoke(this.Page, parameterValueList);
             }
-            catch (Exception e)
+            else
             {
-                if (this.ThrowError)
-                    throw e;
-                else
-                    return new Error(e.Message, e.Source, e.TargetSite.Name);
+                throw new Exception("没有找到指定调用方法");
             }
         }
         private bool IsAjaxMethod(MethodInfo methodInfo)

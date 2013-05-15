@@ -30,7 +30,6 @@
         <asp:ListItem>c</asp:ListItem>
         <asp:ListItem>d</asp:ListItem>
         <asp:ListItem>e</asp:ListItem>
-        <asp:ListItem></asp:ListItem>
     </asp:ListBox>
     <asp:Button ID="Button4" runat="server" OnClick="Button4_Click" Text="Button" />
     <asp:BulletedList ID="BulletedList1" runat="server">

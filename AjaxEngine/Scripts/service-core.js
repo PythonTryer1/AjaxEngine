@@ -6,8 +6,8 @@
 */
 window.AjaxEngine = window.AjaxEngine || {};
 (function (owner) {
-    owner.onRequestBegin =owner.onRequestBegin || window.onRequestBegin;
-    owner.onRequestEnd = owner.onRequestEnd||window.onRequestEnd;
+    owner.onRequestBegin = owner.onRequestBegin || window.onRequestBegin;
+    owner.onRequestEnd = owner.onRequestEnd || window.onRequestEnd;
     owner.wrapUrl = owner.wrapUrl || function (url) {
         var app = this;
         if (url.indexOf('?') > -1)
@@ -20,7 +20,7 @@ window.AjaxEngine = window.AjaxEngine || {};
         var jsonObject = (new Function("return " + str + ";"))();
         return jsonObject;
     };
-    owner.jsonToString =  owner.jsonToString || function (obj) {
+    owner.jsonToString = owner.jsonToString || function (obj) {
         var THIS = this;
         switch (typeof (obj)) {
             case 'string':
@@ -39,8 +39,9 @@ window.AjaxEngine = window.AjaxEngine || {};
                     return 'null';
                 } else {
                     var string = [];
-                    for (var p in obj)
+                    for (var p in obj) {
                         string.push(THIS.jsonToString(p) + ':' + THIS.jsonToString(obj[p]));
+                    }
                     return '{' + string.join(',') + '}';
                 }
             case 'number':
@@ -71,13 +72,13 @@ window.AjaxEngine = window.AjaxEngine || {};
             data: formData,
             dataType: "json",
             success: function (result) {
-                if (owner.onRequestEnd)
+                if (owner.onRequestEnd) {
                     owner.onRequestEnd();
+                }
                 reutrnResult = result;
-                if (callback)
-                    callback(reutrnResult);
+                if (callback) callback(reutrnResult);
             }
         });
         return reutrnResult;
     };
-} (window.AjaxEngine));
+}(window.AjaxEngine));

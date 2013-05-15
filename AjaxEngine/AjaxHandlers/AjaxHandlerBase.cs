@@ -15,14 +15,13 @@ namespace AjaxEngine.AjaxHandlers
 {
     public class AjaxHandlerBase : IAjaxHandler
     {
-        protected virtual Error HandleError(Exception ex)
+        protected string HandleError(string message)
         {
-            if (this.ThrowError)
-                throw ex;
-            else
-                return new Error(ex.Message, ex.Source, ex.TargetSite.Name);
+            this.Context.Response.Clear();
+            this.Context.Response.Write(message);
+            this.Context.Response.End();
+            return message;
         }
-        protected virtual bool ThrowError { get; set; }
         protected string InvokeMethodName { get; set; }
         protected string JsonpCallbackName { get; set; }
         protected string JsonpEnabled { get; set; }
@@ -48,7 +47,14 @@ namespace AjaxEngine.AjaxHandlers
             this.ServiceEntity = this;
             this.Context = context;
             //
-            var invoke = this.PreInvoke();
+            PreInvokeEventArgs preInvokeArgs = new PreInvokeEventArgs();
+            this.PreInvoke(preInvokeArgs);
+            if (preInvokeArgs.Cancel)
+            {
+                context.Response.Clear();
+                context.Response.Write(this.Serializer.Serialize(preInvokeArgs.Result));
+                context.Response.End();
+            }
             //生成文档
             if (context.Request.QueryString.Count < 1 && context.Request.Form.Count < 1)
             {
@@ -86,7 +92,7 @@ namespace AjaxEngine.AjaxHandlers
             //处理调用
             this.InvokeMethodName = context.Request[Const.METHOD];
             this.JsonpCallbackName = context.Request[Const.CALLBACK];
-            if (invoke && !string.IsNullOrEmpty(this.InvokeMethodName))
+            if (!string.IsNullOrEmpty(this.InvokeMethodName))
             {
                 object result = this.InvokeEntityMethod(this.InvokeMethodName, context.Request.HttpMethod);
                 context.Response.Clear();
@@ -98,39 +104,29 @@ namespace AjaxEngine.AjaxHandlers
             }
             else
             {
-                context.Response.Clear();
-                context.Response.Write(this.Serializer.Serialize(HandleError(new Exception("没有找到指定调用方法"))));
-                context.Response.End();
+                HandleError("没有找到指定调用方法");
             }
         }
         protected virtual object InvokeEntityMethod(string methodName, string httpMethod)
         {
-
             MethodInfo methodInfo = MethodCache.GetMethodInfo(this.ServiceEntity.GetType(), methodName);
             string allowHttpMethods = null;
             if (methodInfo != null && this.IsAjaxMethod(methodInfo, ref allowHttpMethods))
             {
                 if (!string.IsNullOrEmpty(allowHttpMethods) && allowHttpMethods.ToUpper().Split(',').Contains(httpMethod.ToUpper()))
                 {
-                    try
-                    {
-                        ParameterInfo[] pareameterInfos = ParameterCache.GetPropertyInfo(methodInfo);
-                        object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
-                        return methodInfo.Invoke(this.ServiceEntity, parameterValueList);
-                    }
-                    catch (Exception ex)
-                    {
-                        return HandleError(ex);
-                    }
+                    ParameterInfo[] pareameterInfos = ParameterCache.GetPropertyInfo(methodInfo);
+                    object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
+                    return methodInfo.Invoke(this.ServiceEntity, parameterValueList);
                 }
                 else
                 {
-                    return HandleError(new Exception("不允许用\"" + httpMethod + "\"方式调用"));
+                   return HandleError("不允许用\"" + httpMethod + "\"方式调用");
                 }
             }
             else
             {
-                return HandleError(new Exception("没有找到指定调用方法"));
+                return HandleError("没有找到指定调用方法");
             }
         }
         protected virtual object[] GetEntityParameterValueList(ParameterInfo[] pareameterInfos)
@@ -158,9 +154,8 @@ namespace AjaxEngine.AjaxHandlers
             httpMethod = ajaxMethod.HttpMethod;
             return ajaxMethod != null;
         }
-        protected virtual bool PreInvoke()
+        protected virtual void PreInvoke(PreInvokeEventArgs invokeEventArgs)
         {
-            return true;
         }
     }
 }
