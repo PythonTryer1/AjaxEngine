@@ -56,7 +56,8 @@ namespace AjaxEngine.AjaxHandlers
                 context.Response.End();
             }
             //生成文档
-            if (context.Request.QueryString.Count < 1 && context.Request.Form.Count < 1)
+            if (string.IsNullOrEmpty(context.Request[Const.METHOD])
+                && string.IsNullOrEmpty(context.Request[Const.CLIENT_SCRIPT]))
             {
                 ServiceDocBuilder docBuilder = new ServiceDocBuilder(this.ServiceEntity);
                 context.Response.Clear();
@@ -65,9 +66,9 @@ namespace AjaxEngine.AjaxHandlers
                 return;
             }
             //生成代理脚本
-            if (!string.IsNullOrEmpty(context.Request.QueryString[Const.CLIENT_SCRIPT]))
+            if (!string.IsNullOrEmpty(context.Request[Const.CLIENT_SCRIPT]))
             {
-                var clientScript = context.Request.QueryString[Const.CLIENT_SCRIPT].ToLower().Split(',');
+                var clientScript = context.Request[Const.CLIENT_SCRIPT].ToLower().Split(',');
                 context.Response.Clear();
                 context.Response.ContentType = Const.TEXT_JAVASCRIPT;
                 if (clientScript.Contains(Const.JQUERY))
@@ -121,7 +122,7 @@ namespace AjaxEngine.AjaxHandlers
                 }
                 else
                 {
-                   return HandleError("不允许用\"" + httpMethod + "\"方式调用");
+                    return HandleError("不允许用\"" + httpMethod + "\"方式调用");
                 }
             }
             else
