@@ -46,9 +46,17 @@ namespace AjaxEngine.AjaxHandlers
         {
             this.Context = context;
             this.ServiceEntity = this;
-            this.InvokeMethodName = Context.Request[Const.METHOD];
-            this.JsonpCallbackName = Context.Request[Const.CALLBACK];
-            
+            this.InvokeMethodName = Context.Request[Const.METHOD] ?? Context.Request.Headers[Const.METHOD];
+            this.JsonpCallbackName = Context.Request[Const.CALLBACK] ?? Context.Request.Headers[Const.CALLBACK];
+            //调用前
+            HandleEventArgs processEventArgs = new HandleEventArgs();
+            this.OnPrecess(processEventArgs);
+            if (processEventArgs.Cancel)
+            {
+                context.Response.Clear();
+                context.Response.Write(this.Serializer.Serialize(processEventArgs.Result));
+                context.Response.End();
+            }
             //生成文档
             if (string.IsNullOrEmpty(context.Request[Const.METHOD])
                 && string.IsNullOrEmpty(context.Request[Const.CLIENT_SCRIPT]))
@@ -84,16 +92,16 @@ namespace AjaxEngine.AjaxHandlers
                 context.Response.End();
                 return;
             }
-            //
-            PreInvokeEventArgs preInvokeArgs = new PreInvokeEventArgs();
-            this.PreInvoke(preInvokeArgs);
-            if (preInvokeArgs.Cancel)
+            //调用前
+            HandleEventArgs invokeEventArgs = new HandleEventArgs();
+            this.OnInvoke(invokeEventArgs);
+            if (invokeEventArgs.Cancel)
             {
                 context.Response.Clear();
-                context.Response.Write(this.Serializer.Serialize(preInvokeArgs.Result));
+                context.Response.Write(this.Serializer.Serialize(invokeEventArgs.Result));
                 context.Response.End();
             }
-            //处理调用
+            //调用
             if (!string.IsNullOrEmpty(this.InvokeMethodName))
             {
                 object result = this.InvokeEntityMethod(this.InvokeMethodName, context.Request.HttpMethod);
@@ -156,8 +164,9 @@ namespace AjaxEngine.AjaxHandlers
             httpMethod = ajaxMethod.HttpMethod;
             return ajaxMethod != null;
         }
-        protected virtual void PreInvoke(PreInvokeEventArgs invokeEventArgs)
+        protected virtual void OnInvoke(HandleEventArgs invokeEventArgs)
         {
         }
+        protected virtual void OnPrecess(HandleEventArgs requestEventArgs) { }
     }
 }

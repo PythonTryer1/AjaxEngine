@@ -19,9 +19,14 @@ namespace AjaxEngine.Utils
         {
             Type entityType = this.Entity.GetType();
             string entityDescription = "";
+            string entityName = entityType.Name;
             SummaryAttribute entitySummary = entityType.GetAttribute<SummaryAttribute>();
             if (entitySummary != null)
+            {
                 entityDescription = entitySummary.Description;
+                if (!string.IsNullOrEmpty(entitySummary.Name))
+                    entityName = entitySummary.Name;
+            }
 
             StringBuilder buffer = new StringBuilder();
             buffer.Append(@"<!doctype html >
@@ -49,7 +54,7 @@ namespace AjaxEngine.Utils
     <div id='header'>
         {entity}服务
     </div>
-    <div id='content'><div id='serviceSumary'>服务说明 : {entitySumary}</div>".Replace("{entity}", entityType.Name).Replace("{entitySumary}", entityDescription));
+    <div id='content'><div id='serviceSumary'>服务说明 : {entitySumary}</div>".Replace("{entity}", entityName).Replace("{entitySumary}", entityDescription));
 
             List<MethodInfo> methodList = this.Entity.GetMethods().ToList().Where(m => m.GetAttribute<AjaxMethodAttribute>() != null).ToList();
             foreach (MethodInfo method in methodList)
@@ -91,7 +96,7 @@ namespace AjaxEngine.Utils
         <th style='width:255px;'>
             说明
         </th>
-    </tr>".Replace("{method}", method.Name).Replace("{return}", method.ReturnType.FullName + "," + methodReturn).Replace("{methodSumary}", methodDescription)).Replace("{httpMethod}",ajaxMethod.HttpMethod.Split(',')[0]);
+    </tr>".Replace("{method}", method.Name).Replace("{return}", method.ReturnType.FullName + "," + methodReturn).Replace("{methodSumary}", methodDescription)).Replace("{httpMethod}", ajaxMethod.HttpMethod.Split(',')[0]);
                 ParameterInfo[] parameterList = method.GetParameters();
                 foreach (ParameterInfo parameter in parameterList)
                 {
@@ -107,7 +112,7 @@ namespace AjaxEngine.Utils
             buffer.Append(@"</div>
 <div id='footer'>
 AjaxEngine {version}   -   Powered By <a href='http://www.houfeng.net' target='_blank'>Houfeng</a>
-</div>".Replace("{version}",System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+</div>".Replace("{version}", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
             return buffer.ToString();
         }
     }

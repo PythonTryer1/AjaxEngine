@@ -27,7 +27,7 @@ namespace AjaxEngine.Demo
     public class Handler1 : AjaxHandlerBase
     {
 
-        protected override void PreInvoke(PreInvokeEventArgs e)
+        protected override void OnInvoke(HandleEventArgs e)
         {
         }
         [Summary(Description = "这是一个添加方法",

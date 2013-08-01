@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AjaxEngine.AjaxHandlers
 {
-    public class PreInvokeEventArgs : EventArgs
+    public class HandleEventArgs : EventArgs
     {
         public bool Cancel { get; set; }
         public object Result { get; set; }

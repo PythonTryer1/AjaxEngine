@@ -147,7 +147,7 @@ namespace AjaxEngine.AjaxPages
             if (!this.IsAjaxRequest)
                 this.GenerateStripts();
             //
-            this.InvokeMethodName = this.Page.Request[Const.METHOD];
+            this.InvokeMethodName = this.Page.Request[Const.METHOD] ?? this.Page.Request.Headers[Const.METHOD];
             if (this.IsAjaxRequest && !string.IsNullOrEmpty(this.InvokeMethodName))
             {
                 object result = this.InvokeEntityMethod(this.InvokeMethodName);
