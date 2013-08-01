@@ -44,17 +44,11 @@ namespace AjaxEngine.AjaxHandlers
         }
         public virtual void ProcessRequest(HttpContext context)
         {
-            this.ServiceEntity = this;
             this.Context = context;
-            //
-            PreInvokeEventArgs preInvokeArgs = new PreInvokeEventArgs();
-            this.PreInvoke(preInvokeArgs);
-            if (preInvokeArgs.Cancel)
-            {
-                context.Response.Clear();
-                context.Response.Write(this.Serializer.Serialize(preInvokeArgs.Result));
-                context.Response.End();
-            }
+            this.ServiceEntity = this;
+            this.InvokeMethodName = Context.Request[Const.METHOD];
+            this.JsonpCallbackName = Context.Request[Const.CALLBACK];
+            
             //生成文档
             if (string.IsNullOrEmpty(context.Request[Const.METHOD])
                 && string.IsNullOrEmpty(context.Request[Const.CLIENT_SCRIPT]))
@@ -90,9 +84,16 @@ namespace AjaxEngine.AjaxHandlers
                 context.Response.End();
                 return;
             }
+            //
+            PreInvokeEventArgs preInvokeArgs = new PreInvokeEventArgs();
+            this.PreInvoke(preInvokeArgs);
+            if (preInvokeArgs.Cancel)
+            {
+                context.Response.Clear();
+                context.Response.Write(this.Serializer.Serialize(preInvokeArgs.Result));
+                context.Response.End();
+            }
             //处理调用
-            this.InvokeMethodName = context.Request[Const.METHOD];
-            this.JsonpCallbackName = context.Request[Const.CALLBACK];
             if (!string.IsNullOrEmpty(this.InvokeMethodName))
             {
                 object result = this.InvokeEntityMethod(this.InvokeMethodName, context.Request.HttpMethod);
