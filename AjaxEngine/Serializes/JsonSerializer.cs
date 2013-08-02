@@ -11,35 +11,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Dispatcher;
 using System.Text;
 using System.Web.Script.Serialization;
+using AjaxEngine.Json;
 
 namespace AjaxEngine.Serializes
 {
-    public class JsonSerializer :ISerializer
+    public class JsonSerializer : ISerializer
     {
-        private JavaScriptSerializer innerJsonSerializer = new JavaScriptSerializer();
-        /// <summary>
-        /// Json序列化器
-        /// </summary>
-        public JsonSerializer()
+        private JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+        public string Serialize(object obj)
         {
-            this.innerJsonSerializer = new JavaScriptSerializer();
-            //JavaScriptConverter[] customConverter = new JavaScriptConverter[] { new DateTimeConverter() };
-            //this.innerJsonSerializer.RegisterConverters(customConverter);
-            this.innerJsonSerializer.MaxJsonLength = int.MaxValue;
+            //return serializer.Serialize(obj);
+            return JsonConvert.SerializeObject(obj);
         }
-        public string Serialize(object obj) {
-            return this.innerJsonSerializer.Serialize(obj);
+        public T Deserialize<T>(string text)
+        {
+            //return serializer.Deserialize<T>(text);
+            return JsonConvert.DeserializeObject<T>(text);
         }
-        public void Serialize(object obj,StringBuilder output) {
-            this.innerJsonSerializer.Serialize(obj, output);
-        }
-        public T Deserialize<T>(string text) {
-            return this.innerJsonSerializer.Deserialize<T>(text);
-        }
-        public object Deserialize(string text,Type type){
-            return this.innerJsonSerializer.Deserialize(text,type);
+        public object Deserialize(string text, Type type)
+        {
+            //JsonQueryStringConverter ser = new JsonQueryStringConverter();
+            //return ser.ConvertStringToValue(text, type);
+            return JsonConvert.DeserializeObject(text, type);
         }
     }
 }

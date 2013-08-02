@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjaxEngine", "AjaxEngine\Aj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjaxEngine.Demo", "AjaxEngine.Demo\AjaxEngine.Demo.csproj", "{7CA599C9-083F-4BE8-9F41-16525B77BE73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjaxEngine.Test", "AjaxEngine.Test\AjaxEngine.Test.csproj", "{0202F123-0041-4C51-8C22-C395D74A6C01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{7CA599C9-083F-4BE8-9F41-16525B77BE73}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7CA599C9-083F-4BE8-9F41-16525B77BE73}.Release|Win32.ActiveCfg = Release|Any CPU
 		{7CA599C9-083F-4BE8-9F41-16525B77BE73}.Release|x86.ActiveCfg = Release|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Release|Win32.ActiveCfg = Release|Any CPU
+		{0202F123-0041-4C51-8C22-C395D74A6C01}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,5 +6,4 @@ using System.Text;
 namespace AjaxEngine.Utils
 {
     public delegate void CallbackHandler<T>(T arg);
-    public delegate void CallbackHandler(dynamic arg);
 }

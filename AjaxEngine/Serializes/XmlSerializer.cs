@@ -29,13 +29,6 @@ namespace AjaxEngine.Serializes
             return (T)serializer.Deserialize(xmlReader);
         }
 
-
-        public void Serialize(object obj, StringBuilder output)
-        {
-            if (output != null)
-                output.Append(this.Serialize(obj));
-        }
-
         public object Deserialize(string text, Type type)
         {
             //声明序列化对象实例serializer 

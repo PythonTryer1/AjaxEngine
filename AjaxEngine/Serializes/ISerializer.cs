@@ -8,7 +8,6 @@ namespace AjaxEngine.Serializes
     public interface ISerializer
     {
         string Serialize(object obj);
-        void Serialize(object obj, StringBuilder output);
         T Deserialize<T>(string text);
         object Deserialize(string text,Type type);
     }
