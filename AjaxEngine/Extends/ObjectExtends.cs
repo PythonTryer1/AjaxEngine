@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using AjaxEngine.Reflection;
+using System.ComponentModel;
 
 namespace AjaxEngine.Extends
 {
@@ -34,8 +35,12 @@ namespace AjaxEngine.Extends
                 return Convert.ToBoolean(entity);
             else if (pType == typeof(float) || pType == typeof(float?))
                 return (float)(entity);
+            else if (pType == typeof(object))
+                return entity;
             else
+            {
                 return null;
+            }
         }
         public static object InvokeMethod(this object entity, string methodName, object[] parameters)
         {

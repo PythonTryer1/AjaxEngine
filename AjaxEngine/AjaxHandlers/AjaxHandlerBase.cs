@@ -148,8 +148,7 @@ namespace AjaxEngine.AjaxHandlers
                 object value = valueString.ConvertTo(pi.ParameterType);
                 if (value == null)
                 {
-                    JsonSerializer serializer = new JsonSerializer();
-                    value = serializer.Deserialize(valueString, pi.ParameterType);
+                    value = Gloabl.Serializer.Deserialize(valueString, pi.ParameterType);
                 }
                 valueList.Add(value);
             }
