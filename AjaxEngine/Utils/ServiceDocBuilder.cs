@@ -34,7 +34,7 @@ namespace AjaxEngine.Utils
 <head>
     <title>{entity}</title>
     <style>
-        body { margin: 0px; color:#222; font-family: 微软雅黑 Verdana; font-size: 13px; }
+        body { margin: 0px; color:#222; font-family: 微软雅黑, Verdana; font-size: 13px; }
         #header, #footer { padding: 8px; background-color: #333; color: #fdfdfd; }
         #header a, #footer a { color: #eef; }
         #header { font-size: 22px; font-weight: bold; }

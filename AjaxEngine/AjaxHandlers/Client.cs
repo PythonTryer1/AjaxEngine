@@ -20,6 +20,7 @@ namespace AjaxEngine.AjaxHandlers
         }
         public T Get<T>(string uri, Dictionary<string, object> data)
         {
+            this.WebClient.QueryString.Clear();
             if (data != null)
             {
                 foreach (var key in data.Keys)
@@ -33,6 +34,7 @@ namespace AjaxEngine.AjaxHandlers
         }
         public T Get<T>(string uri, object data)
         {
+            this.WebClient.QueryString.Clear();
             if (data != null)
             {
                 foreach (var key in data.GetProperties())
@@ -51,6 +53,7 @@ namespace AjaxEngine.AjaxHandlers
         }
         public T Post<T>(string uri, Dictionary<string, object> data)
         {
+            this.WebClient.QueryString.Clear();
             if (data != null)
             {
                 foreach (var key in data.Keys)
@@ -68,6 +71,7 @@ namespace AjaxEngine.AjaxHandlers
         }
         public T Post<T>(string uri, object data)
         {
+            this.WebClient.QueryString.Clear();
             if (data != null)
             {
                 foreach (var key in data.GetProperties())
