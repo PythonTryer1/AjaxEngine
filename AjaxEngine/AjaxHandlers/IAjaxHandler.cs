@@ -7,7 +7,7 @@ using System.Web.SessionState;
 
 namespace AjaxEngine.AjaxHandlers
 {
-    public interface IAjaxHandler : IHttpHandler, IServiceEntity, IRequiresSessionState
+    public interface IAjaxHandler : IHttpHandler, IServiceEntity
     {
     }
 }

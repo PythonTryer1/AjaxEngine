@@ -7,9 +7,17 @@ namespace AjaxEngine.Utils
 {
     public struct Const
     {
-        public static string TEXT_JAVASCRIPT
+        public static string APPLICATION_JAVASCRIPT
         {
-            get { return "text/javascript"; }
+            get { return "application/x-javascript"; }
+        }
+        public static string APPLICATION_JSON
+        {
+            get { return "application/json"; }
+        }
+        public static string TEXT_HTML
+        {
+            get { return "text/html"; }
         }
         public static string METHOD
         {

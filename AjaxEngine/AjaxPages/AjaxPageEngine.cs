@@ -126,7 +126,7 @@ namespace AjaxEngine.AjaxPages
                 object value = valueString.ConvertTo(pi.ParameterType);
                 if (value == null)
                 {
-                    value =Gloabl.Serializer.Deserialize(valueString, pi.ParameterType);
+                    value = Gloabl.Serializer.Deserialize(valueString, pi.ParameterType);
                 }
                 valueList.Add(value);
             }
@@ -163,7 +163,7 @@ namespace AjaxEngine.AjaxPages
             {
                 var clientScript = Page.Request.QueryString[Const.CLIENT_SCRIPT].ToLower().Split(',');
                 Page.Response.Clear();
-                Page.Response.ContentType = Const.TEXT_JAVASCRIPT;
+                Page.Response.ContentType = Const.APPLICATION_JAVASCRIPT;
                 if (clientScript.Contains(Const.JQUERY))
                 {
                     Page.Response.Write(Resources.Jquery);
@@ -201,6 +201,7 @@ namespace AjaxEngine.AjaxPages
                     this.RenderAllControls();
                 //
                 Page.Response.Clear();
+                Page.Response.ContentType = Const.APPLICATION_JSON;
                 Page.Response.Write(this.JsonSerializer.Serialize(this.OutMessages));
                 Page.Response.End();
             }

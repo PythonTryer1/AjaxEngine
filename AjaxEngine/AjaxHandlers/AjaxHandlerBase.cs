@@ -54,7 +54,16 @@ namespace AjaxEngine.AjaxHandlers
             if (processEventArgs.Cancel)
             {
                 context.Response.Clear();
-                context.Response.Write(this.Serializer.Serialize(processEventArgs.Result));
+                if (string.IsNullOrEmpty(this.JsonpCallbackName))
+                {
+                    context.Response.ContentType = Const.APPLICATION_JSON;
+                    context.Response.Write(this.Serializer.Serialize(processEventArgs.Result));
+                }
+                else
+                {
+                    context.Response.ContentType = Const.APPLICATION_JAVASCRIPT;
+                    context.Response.Write(string.Format("{0}({1});", this.JsonpCallbackName, this.Serializer.Serialize(processEventArgs.Result)));
+                }
                 context.Response.End();
             }
             //生成文档
@@ -63,6 +72,7 @@ namespace AjaxEngine.AjaxHandlers
             {
                 ServiceDocBuilder docBuilder = new ServiceDocBuilder(this.ServiceEntity);
                 context.Response.Clear();
+                context.Response.ContentType = Const.TEXT_HTML;
                 context.Response.Write(docBuilder.ToString());
                 context.Response.End();
                 return;
@@ -72,7 +82,7 @@ namespace AjaxEngine.AjaxHandlers
             {
                 var clientScript = context.Request[Const.CLIENT_SCRIPT].ToLower().Split(',');
                 context.Response.Clear();
-                context.Response.ContentType = Const.TEXT_JAVASCRIPT;
+                context.Response.ContentType = Const.APPLICATION_JAVASCRIPT;
                 if (clientScript.Contains(Const.JQUERY))
                 {
                     context.Response.Write(Resources.Jquery);
@@ -107,9 +117,15 @@ namespace AjaxEngine.AjaxHandlers
                 object result = this.InvokeEntityMethod(this.InvokeMethodName, context.Request.HttpMethod);
                 context.Response.Clear();
                 if (string.IsNullOrEmpty(this.JsonpCallbackName))
+                {
+                    context.Response.ContentType = Const.APPLICATION_JSON;
                     context.Response.Write(this.Serializer.Serialize(result));
+                }
                 else
+                {
+                    context.Response.ContentType = Const.APPLICATION_JAVASCRIPT;
                     context.Response.Write(string.Format("{0}({1});", this.JsonpCallbackName, this.Serializer.Serialize(result)));
+                }
                 context.Response.End();
             }
             else
