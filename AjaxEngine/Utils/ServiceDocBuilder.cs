@@ -10,6 +10,7 @@ namespace AjaxEngine.Utils
 {
     internal class ServiceDocBuilder
     {
+        private static Dictionary<Type, string> DocCache = new Dictionary<Type, string>();
         public object Entity { get; set; }
         public ServiceDocBuilder(object entity)
         {
@@ -18,6 +19,10 @@ namespace AjaxEngine.Utils
         public override string ToString()
         {
             Type entityType = this.Entity.GetType();
+            if (DocCache.ContainsKey(entityType))
+            {
+                return DocCache[entityType];
+            }
             string entityDescription = "";
             string entityName = entityType.Name;
             SummaryAttribute entitySummary = entityType.GetAttribute<SummaryAttribute>();
@@ -36,7 +41,7 @@ namespace AjaxEngine.Utils
     <style>
         body { margin: 0px; color:#222; font-family: 微软雅黑, Verdana; font-size: 13px; }
         #header, #footer { padding: 8px; background-color: #333; color: #fdfdfd; }
-        #header a, #footer a { color: #eef; }
+        #header a, #footer a { color: #fdfdfd; }
         #header { font-size: 22px; font-weight: bold; }
         #content { padding: 8px; }
         .methodForm { border: solid 1px #bbb; padding: 8px; margin-bottom:10px; }
@@ -52,9 +57,9 @@ namespace AjaxEngine.Utils
 </head>
 <body>
     <div id='header'>
-        {entity}服务
+        {entity}
     </div>
-    <div id='content'><div id='serviceSumary'>服务说明 : {entitySumary}</div>".Replace("{entity}", entityName).Replace("{entitySumary}", entityDescription));
+    <div id='content'><div id='serviceSumary'>说明 : {entitySumary}</div>".Replace("{entity}", entityName).Replace("{entitySumary}", entityDescription));
 
             List<MethodInfo> methodList = this.Entity.GetMethods().ToList().Where(m => m.GetAttribute<AjaxMethodAttribute>() != null).ToList();
             foreach (MethodInfo method in methodList)
@@ -112,8 +117,9 @@ namespace AjaxEngine.Utils
             buffer.Append(@"</div>
 <div id='footer'>
 AjaxEngine {version}   -   Powered By <a href='http://www.houfeng.net' target='_blank'>Houfeng</a>
-</div>".Replace("{version}", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
-            return buffer.ToString();
+</div>".Replace("{version}", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+            DocCache[entityType] = buffer.ToString();
+            return DocCache[entityType];
         }
     }
 }
