@@ -15,6 +15,7 @@ using System.ServiceModel.Dispatcher;
 using System.Text;
 using System.Web.Script.Serialization;
 using AjaxEngine.Json;
+using AjaxEngine.Json.Converters;
 
 namespace AjaxEngine.Serializes
 {
@@ -25,7 +26,7 @@ namespace AjaxEngine.Serializes
         public string Serialize(object obj)
         {
             //return serializer.Serialize(obj);
-            return JsonConvert.SerializeObject(obj);
+            return JsonConvert.SerializeObject(obj, Formatting.None, new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd hh:mm:ss" });
         }
         public T Deserialize<T>(string text)
         {

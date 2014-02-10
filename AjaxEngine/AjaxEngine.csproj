@@ -81,6 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AjaxHandlers\ClientParameter.cs" />
+    <Compile Include="AjaxHandlers\CookieWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="AjaxHandlers\IAjaxHandler.cs" />
     <Compile Include="AjaxHandlers\HandleEventArgs.cs" />
     <Compile Include="AjaxHandlers\Client.cs" />

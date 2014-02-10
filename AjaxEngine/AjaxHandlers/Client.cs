@@ -11,10 +11,10 @@ namespace AjaxEngine.AjaxHandlers
 {
     public class Client
     {
-        public WebClient WebClient { get; set; }
+        public CookieWebClient WebClient { get; set; }
         public Client()
         {
-            this.WebClient = new WebClient();
+            this.WebClient = new CookieWebClient();
             this.WebClient.Encoding = System.Text.Encoding.UTF8;
             this.WebClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
         }

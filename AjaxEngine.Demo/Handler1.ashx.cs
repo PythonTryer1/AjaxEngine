@@ -11,12 +11,14 @@ namespace AjaxEngine.Demo
 {
     public class T
     {
+        public DateTime dt { get; set; }
         public int t1 { get; set; }
         public int t2 { get; set; }
         public T()
         {
             this.t1 = 1;
             this.t2 = 2;
+            this.dt = DateTime.Now;
         }
     }
     /// <summary>
