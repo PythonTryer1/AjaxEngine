@@ -52,7 +52,7 @@ window.AjaxEngine = window.AjaxEngine || {};
                 return obj;
         }
     };
-    owner.ajax = owner.ajax || $.ajax;
+    owner.ajax = owner.ajax || jQuery.ajax;
     owner.callService = owner.callService || function (url, data, callback) {
         if (owner.onRequestBegin)
             owner.onRequestBegin();

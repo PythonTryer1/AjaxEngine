@@ -86,7 +86,7 @@ window.AjaxEngine = window.AjaxEngine || {};
             return element;
         }
     };
-    owner.ajax = owner.ajax || $.ajax;
+    owner.ajax = owner.ajax || jQuery.ajax;
     owner.serializeData = owner.serializeData || function () {
         var formData = $(theForm).serializeArray();
         theForm.__EVENTTARGET.value = "";
