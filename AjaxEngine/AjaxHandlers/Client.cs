@@ -54,16 +54,19 @@ namespace AjaxEngine.AjaxHandlers
         public T Post<T>(string uri, Dictionary<string, object> data)
         {
             this.WebClient.QueryString.Clear();
+            NameValueCollection postData = new NameValueCollection();
             if (data != null)
             {
                 foreach (var key in data.Keys)
                 {
                     string val = (data[key] is string) ? (string)data[key] : Gloabl.Serializer.Serialize(data[key]);
-                    this.WebClient.QueryString.Add(key, val);
+                    postData.Add(key, val);
                 }
             }
-            var rs = this.WebClient.UploadString(uri, "");
-            return Gloabl.Serializer.Deserialize<T>(rs);
+            //this.WebClient.UploadValues()
+            var rs = this.WebClient.UploadValues(uri, postData);
+            var rsText = Encoding.UTF8.GetString(rs);
+            return Gloabl.Serializer.Deserialize<T>(rsText);
         }
         public T Post<T>(string uri)
         {
@@ -72,17 +75,19 @@ namespace AjaxEngine.AjaxHandlers
         public T Post<T>(string uri, object data)
         {
             this.WebClient.QueryString.Clear();
+            NameValueCollection postData = new NameValueCollection();
             if (data != null)
             {
                 foreach (var key in data.GetProperties())
                 {
                     var propVal = data.GetPropertyValue(key.Name);
                     string val = (propVal is string) ? (string)propVal : Gloabl.Serializer.Serialize(propVal);
-                    this.WebClient.QueryString.Add(key.Name, val);
+                    postData.Add(key.Name, val);
                 }
             }
-            var rs = this.WebClient.UploadString(uri, "");
-            return Gloabl.Serializer.Deserialize<T>(rs);
+            var rs = this.WebClient.UploadValues(uri, postData);
+            var rsText = Encoding.UTF8.GetString(rs);
+            return Gloabl.Serializer.Deserialize<T>(rsText);
         }
     }
 }

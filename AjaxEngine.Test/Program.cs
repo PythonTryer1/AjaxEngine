@@ -21,11 +21,13 @@ namespace AjaxEngine.Test
         static void Main(string[] args)
         {
             Client client = new Client();
-            var data = new { 
-                method="login",
-                user = "{'account':'gptest\\\\guoqiang','password':'1'}"//new User("gptest\\guoqiang", "1")
+            var data = new
+            {
+                method = "login",
+                loginInfo = "{'account':'gptest\\\\guoqiang','password':'1'}",
+                appKey = "aa"
             };
-            var rs = client.Post<DataMap>("http://192.168.1.107/service.ashx", data);
+            var rs = client.Post<DataMap>("https://mo.chinastock.com.cn/service.ashx", data);
             Console.Write(Gloabl.Serializer.Serialize(rs));
             Console.Read();
         }
