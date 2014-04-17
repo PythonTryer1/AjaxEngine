@@ -21,12 +21,14 @@ namespace AjaxEngine.Serializes
 {
     public class JsonSerializer : ISerializer
     {
-        private JavaScriptSerializer serializer = new JavaScriptSerializer();
-
+        //private JavaScriptSerializer serializer = new JavaScriptSerializer();
+        
         public string Serialize(object obj)
         {
+            var dateTimeFormat = new IsoDateTimeConverter();
+            dateTimeFormat.DateTimeFormat = "yyyy-MM-dd HH:mm:ss.ffff";
             //return serializer.Serialize(obj);
-            return JsonConvert.SerializeObject(obj, Formatting.None, new IsoDateTimeConverter() { DateTimeFormat = "yyyy-MM-dd hh:mm:ss" });
+            return JsonConvert.SerializeObject(obj, Formatting.None, dateTimeFormat);
         }
         public T Deserialize<T>(string text)
         {
