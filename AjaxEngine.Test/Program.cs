@@ -20,6 +20,9 @@ namespace AjaxEngine.Test
         }
         static void Main(string[] args)
         {
+            Console.WriteLine(AjaxEngine.Gloabl.Serializer.Serialize(DateTime.Now));
+            Console.Read();
+            /*
             Client client = new Client();
             var data = new
             {
@@ -28,8 +31,9 @@ namespace AjaxEngine.Test
                 appKey = "aa"
             };
             var rs = client.Post<DataMap>("https://mo.chinastock.com.cn/service.ashx", data);
-            Console.Write(Gloabl.Serializer.Serialize(rs));
+            Console.WriteLine(Gloabl.Serializer.Serialize(rs));
             Console.Read();
+            */
         }
     }
 }
