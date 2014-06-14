@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="Scripts/jquery-1.4.1.min.js"></script>
+</head>
+<body>
+    <button id="btnCreate">调用服务器创建 Cookie</button>
+    <button id="btnTest">测试图片传送 Cookie</button>
+    <br/>
+    <img style="border:solid 1px #333;width:100px;height:100px;" id="imgTest" _src="http://192.168.0.139:809/Handler1.ashx?method=getImage" />
+    <script>
+        $('#btnCreate').click(function () {
+            $.getJSON('http://192.168.0.139:809/Handler1.ashx?method=create&callback=?', function (rs) {
+                alert(rs);
+            });
+        });
+        $('#btnTest').click(function () {
+            var img = $('#imgTest');
+            img.attr('src', img.attr('_src'));
+        });
+    </script>
+</body>
+</html>
