@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 
 namespace AjaxEngine.Reflection
@@ -17,7 +16,6 @@ namespace AjaxEngine.Reflection
             {
                 return type;
             }
-
             lock (m_mutex)
             {
                 Assembly[] allAssembly = AppDomain.CurrentDomain.GetAssemblies();
@@ -28,6 +26,21 @@ namespace AjaxEngine.Reflection
                         break;
                 }
                 m_cache[typeFullName] = type;
+                return type;
+            }
+        }
+        public static Type GetType(string assemblyFile, string typeFullName)
+        {
+            string cacheKey = string.Format("{0}::{1}", assemblyFile, typeFullName);
+            Type type;
+            if (m_cache.TryGetValue(cacheKey, out type))
+            {
+                return type;
+            }
+            lock (m_mutex)
+            {
+                type = Assembly.LoadFrom(assemblyFile).GetType(typeFullName);
+                m_cache[cacheKey] = type;
                 return type;
             }
         }

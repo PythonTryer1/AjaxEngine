@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AjaxEngine.Reflection;
-using System.Reflection;
 
 namespace AjaxEngine.Extends
 {

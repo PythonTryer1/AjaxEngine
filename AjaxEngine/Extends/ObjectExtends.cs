@@ -8,18 +8,19 @@
  * 2011-11-7,Houfeng,添加文件说明，更新版本号为0.1
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
 using AjaxEngine.Reflection;
-using System.ComponentModel;
+using System;
+using System.Reflection;
 
 namespace AjaxEngine.Extends
 {
     public static class ObjectExtends
     {
         public static object ConvertTo(this object entity, Type pType)
+        {
+            return ConvertTo(entity, pType, entity);
+        }
+        public static object ConvertTo(this object entity, Type pType, object defaultReturn)
         {
             if (pType == typeof(DateTime) || pType == typeof(DateTime?))
                 return Convert.ToDateTime(entity);
@@ -39,7 +40,7 @@ namespace AjaxEngine.Extends
                 return entity;
             else
             {
-                return null;
+                return defaultReturn;
             }
         }
         public static object InvokeMethod(this object entity, string methodName, object[] parameters)

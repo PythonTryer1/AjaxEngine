@@ -161,7 +161,7 @@ namespace AjaxEngine.AjaxHandlers
             foreach (ParameterInfo pi in pareameterInfos)
             {
                 string valueString = Convert.ToString(this.Context.Request[pi.Name]);
-                object value = valueString.ConvertTo(pi.ParameterType);
+                object value = valueString.ConvertTo(pi.ParameterType, null);
                 if (value == null)
                 {
                     value = Gloabl.Serializer.Deserialize(valueString, pi.ParameterType);

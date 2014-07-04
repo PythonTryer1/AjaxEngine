@@ -123,7 +123,7 @@ namespace AjaxEngine.AjaxPages
             foreach (ParameterInfo pi in pareameterInfos)
             {
                 string valueString = Convert.ToString(this.Page.Request[pi.Name]);
-                object value = valueString.ConvertTo(pi.ParameterType);
+                object value = valueString.ConvertTo(pi.ParameterType, null);
                 if (value == null)
                 {
                     value = Gloabl.Serializer.Deserialize(valueString, pi.ParameterType);
