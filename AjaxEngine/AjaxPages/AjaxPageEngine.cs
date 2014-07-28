@@ -101,10 +101,10 @@ namespace AjaxEngine.AjaxPages
         #region 核心功能相关方法
         private object InvokeEntityMethod(string methodName)
         {
-            MethodInfo methodInfo = MethodCache.GetMethodInfo(this.Page.GetType(), methodName);
+            MethodInfo methodInfo = MethodFactory.GetMethodInfo(this.Page.GetType(), methodName);
             if (methodInfo != null && this.IsAjaxMethod(methodInfo))
             {
-                ParameterInfo[] pareameterInfos = ParameterCache.GetPropertyInfo(methodInfo);
+                ParameterInfo[] pareameterInfos = ParameterFactory.GetPropertyInfo(methodInfo);
                 object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
                 return methodInfo.Invoke(this.Page, parameterValueList);
             }

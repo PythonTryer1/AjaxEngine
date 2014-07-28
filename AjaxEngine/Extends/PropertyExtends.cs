@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace AjaxEngine.Extends
 {
@@ -14,6 +15,18 @@ namespace AjaxEngine.Extends
             }
             return default(T);
         }
-
+        public static List<T> GetAttributes<T>(this MethodInfo method)
+        {
+            List<T> attrList = new List<T>();
+            object[] attributes = method.GetCustomAttributes(true);
+            foreach (object att in attributes)
+            {
+                if (att is T)
+                {
+                    attrList.Add((T)att);
+                }
+            }
+            return attrList;
+        }
     }
 }

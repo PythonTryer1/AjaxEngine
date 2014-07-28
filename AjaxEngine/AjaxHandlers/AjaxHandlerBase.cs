@@ -135,13 +135,13 @@ namespace AjaxEngine.AjaxHandlers
         }
         protected virtual object InvokeEntityMethod(string methodName, string httpMethod)
         {
-            MethodInfo methodInfo = MethodCache.GetMethodInfo(this.ServiceEntity.GetType(), methodName);
+            MethodInfo methodInfo = MethodFactory.GetMethodInfo(this.ServiceEntity.GetType(), methodName);
             string allowHttpMethods = null;
             if (methodInfo != null && this.IsAjaxMethod(methodInfo, ref allowHttpMethods))
             {
                 if (!string.IsNullOrEmpty(allowHttpMethods) && allowHttpMethods.ToUpper().Split(',').Contains(httpMethod.ToUpper()))
                 {
-                    ParameterInfo[] pareameterInfos = ParameterCache.GetPropertyInfo(methodInfo);
+                    ParameterInfo[] pareameterInfos = ParameterFactory.GetPropertyInfo(methodInfo);
                     object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
                     return methodInfo.Invoke(this.ServiceEntity, parameterValueList);
                 }
