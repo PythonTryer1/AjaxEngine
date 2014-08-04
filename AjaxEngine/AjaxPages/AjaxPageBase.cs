@@ -22,8 +22,14 @@ namespace AjaxEngine.AjaxPages
 
         protected override void OnInit(EventArgs e)
         {
-            base.OnInit(e);
             this.PageEngine = new AjaxPageEngine(this);
+            this.PageEngine.PrecessScriptRequest();
+            base.OnInit(e);
+        }
+        protected override void OnLoadComplete(EventArgs e)
+        {
+            this.PageEngine.ProcessAjaxRequest();
+            base.OnLoadComplete(e);
         }
         /// <summary>
         /// 引发页面的Load事件
@@ -31,7 +37,8 @@ namespace AjaxEngine.AjaxPages
         /// <param name="e">包含事件数据的 EventArgs 对象</param>
         protected override void OnLoad(EventArgs e)
         {
-            this.PageEngine.ProcessAjaxRequest();
+            //3.1 之前的版本 ProcessAjaxRequest 在 Load 中处理
+            //this.PageEngine.ProcessAjaxRequest();
             base.OnLoad(e);
         }
         /// <summary>

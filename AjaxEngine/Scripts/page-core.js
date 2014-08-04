@@ -112,11 +112,14 @@ window.AjaxEngine = window.AjaxEngine || {};
             cache: false,
             data: formData,
             dataType: "json",
-            success: function (result) {
+            success: function (result, status) {
                 reutrnResult = owner.processResult(result);
                 if (callback) {
                     callback(reutrnResult);
                 }
+            },
+            error: function (xmlRequest, status, errorThrown) {
+                document.write(xmlRequest.responseXML || xmlRequest.responseText || errorThrown || status);
             }
         });
         return reutrnResult;

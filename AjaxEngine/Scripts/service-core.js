@@ -71,7 +71,7 @@ window.AjaxEngine = window.AjaxEngine || {};
             cache: false,
             data: formData,
             dataType: "json",
-            success: function (result) {
+            success: function (result, status) {
                 if (owner.onRequestEnd) {
                     owner.onRequestEnd();
                 }

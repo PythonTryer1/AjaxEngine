@@ -37,6 +37,7 @@
         <asp:ListItem>b</asp:ListItem>
         <asp:ListItem>c</asp:ListItem>
     </asp:BulletedList>
+        <%= "{in page render}" %>
     </form>
     <script type="text/javascript" src="https://raw.github.com/Houfeng/ems/master/src/ems.min.js"></script>
     <script type="text/javascript">

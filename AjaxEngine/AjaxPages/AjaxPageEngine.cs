@@ -136,21 +136,37 @@ namespace AjaxEngine.AjaxPages
                 return null;
         }
         /// <summary>
-        /// 处理所有AJAX请求
+        /// 处理 AJAX 方法请求，实现 JS 调后端方法
         /// </summary>
         /// <returns></returns>
         public AjaxPageEngine ProcessAjaxRequest()
         {
-            if (!this.Enabled) return this;
-            //
-            if (!this.IsAjaxRequest)
-                this.GenerateStripts();
+            if (!this.Enabled)
+            {
+                return this;
+            }
             //
             this.InvokeMethodName = this.Page.Request[Const.METHOD] ?? this.Page.Request.Headers[Const.METHOD];
             if (this.IsAjaxRequest && !string.IsNullOrEmpty(this.InvokeMethodName))
             {
                 object result = this.InvokeEntityMethod(this.InvokeMethodName);
                 this.OutMessages.Add(new Message(MessageType.Return, "return", result));
+            }
+            return this;
+        }
+        /// <summary>
+        /// 处理代理脚本请求
+        /// </summary>
+        /// <returns></returns>
+        public AjaxPageEngine PrecessScriptRequest()
+        {
+            if (!this.Enabled)
+            {
+                return this;
+            }
+            if (!this.IsAjaxRequest)
+            {
+                this.GenerateStripts();
             }
             return this;
         }
@@ -190,7 +206,7 @@ namespace AjaxEngine.AjaxPages
             }
         }
         /// <summary>
-        /// 以AJAX方法呈现页面
+        /// 以 AJAX 呈现页面，实理原生控件异步能力
         /// </summary>
         public void AjaxRender()
         {

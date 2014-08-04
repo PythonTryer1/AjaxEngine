@@ -101,13 +101,13 @@ namespace AjaxEngine.Utils
         <th style='width:255px;'>
             说明
         </th>
-    </tr>".Replace("{method}", method.Name).Replace("{return}", method.ReturnType.FullName + "," + methodReturn).Replace("{methodSumary}", methodDescription)).Replace("{httpMethod}", ajaxMethod.HttpMethod.Split(',')[0]);
+    </tr>".Replace("{method}", method.Name).Replace("{return}", method.ReturnType.Name + "," + methodReturn).Replace("{methodSumary}", methodDescription)).Replace("{httpMethod}", ajaxMethod.HttpMethod.Split(',')[0]);
                 ParameterInfo[] parameterList = method.GetParameters();
                 foreach (ParameterInfo parameter in parameterList)
                 {
                     string pDesc = "";
                     methodParameters.TryGetValue(parameter.Name, out pDesc);
-                    buffer.Append("<tr><td>{parameter}</td><td><input class='textbox' type='text' name='{parameter}'/></td><td>{parameter-type}</td><td>{parameter-desc}</td></tr>".Replace("{parameter}", parameter.Name).Replace("{parameter-type}", parameter.ParameterType.FullName)).Replace("{parameter-desc}", pDesc ?? "");
+                    buffer.Append("<tr><td>{parameter}</td><td><input class='textbox' type='text' name='{parameter}'/></td><td>{parameter-type}</td><td>{parameter-desc}</td></tr>".Replace("{parameter}", parameter.Name).Replace("{parameter-type}", parameter.ParameterType.Name)).Replace("{parameter-desc}", pDesc ?? "");
                 }
                 buffer.Append(@"</table>
         <input class='button' type='submit' value='调用' />

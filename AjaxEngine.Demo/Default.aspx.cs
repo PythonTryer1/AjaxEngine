@@ -20,6 +20,7 @@ namespace AjaxEngine.Demo
 
         protected void Button1_Click(object sender, EventArgs e)
         {
+            throw new Exception("错误测试");
             this.TextBox1.Text += "fff";
             this.PageEngine.ShowConfirmBox<int>("aaa", this.Yes, this.No, 3);
             //this.AjaxEngine.GotoUrl("http://www.baidu.com");
