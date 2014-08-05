@@ -32,35 +32,35 @@ namespace AjaxEngine.AjaxPages
     public class AjaxPageEngine : IRequiresSessionState
     {
         #region 属性
-        public string AjaxMethodNamespace { get; set; }
-        public bool AutoImportJQuery { get; set; }
-        public string InvokeMethodName { get; set; }
-        public bool Enabled { get; set; }
-        public Page Page { get; set; }
+        public virtual string AjaxMethodNamespace { get; set; }
+        public virtual bool AutoImportJQuery { get; set; }
+        public virtual string InvokeMethodName { get; set; }
+        public virtual bool Enabled { get; set; }
+        public virtual Page Page { get; private set; }
         /// <summary>
         /// 表单Html元素集合
         /// </summary>
         public HtmlElementCollection Html { get; set; }
-        public bool IsAjaxRequest
+        public virtual bool IsAjaxRequest
         {
             get
             {
                 return this.Page.Request["ajax-request"] != null;
             }
         }
-        public bool IsAjaxPostBack
+        public virtual bool IsAjaxPostBack
         {
             get
             {
                 return IsAjaxRequest && this.Page.IsPostBack;
             }
         }
-        public List<Message> OutMessages { get; set; }
+        public virtual List<Message> OutMessages { get; private set; }
         /// <summary>
         /// 是否为ASP.NET控件启用AJAX回发
         /// </summary>
-        public bool ControlAjaxEnabled { get; set; }
-        public ISerializer JsonSerializer
+        public virtual bool ControlAjaxEnabled { get; set; }
+        public virtual ISerializer JsonSerializer
         {
             get
             {
@@ -70,7 +70,8 @@ namespace AjaxEngine.AjaxPages
         /// <summary>
         /// 是否自动更新控制呈现
         /// </summary>
-        public bool AutoUpdateControls { get; set; }
+        public virtual bool AutoUpdateControls { get; set; }
+        public virtual List<Control> WillUpdateControls { get; private set; }
         #endregion
 
         #region 构造及初始化方法
@@ -95,6 +96,7 @@ namespace AjaxEngine.AjaxPages
             this.ControlAjaxEnabled = true;
             this.AjaxMethodNamespace = "Server";
             this.AutoImportJQuery = true;
+            this.WillUpdateControls = new List<Control>();
         }
         #endregion
 
@@ -214,7 +216,14 @@ namespace AjaxEngine.AjaxPages
             if (this.IsAjaxRequest)
             {
                 if (this.AutoUpdateControls)
-                    this.RenderAllControls();
+                {
+                    this.WillUpdateControls.Clear();
+                    foreach (Control control in this.Page.Form.Controls)
+                    {
+                        this.WillUpdateControls.Add(control);
+                    }
+                }
+                this.AjaxRenderControls();
                 //
                 Page.Response.Clear();
                 Page.Response.ContentType = Const.APPLICATION_JSON;
@@ -240,7 +249,7 @@ namespace AjaxEngine.AjaxPages
         /// </summary>
         /// <param name="control">控件</param>
         /// <returns>控件呈现字符串</returns>
-        public string ControlRenderToString(Control control)
+        public virtual string ControlRenderToString(Control control)
         {
             StringWriter stringWriter = new StringWriter();
             HtmlTextWriter htmlWriter = new HtmlTextWriter(stringWriter);
@@ -257,13 +266,23 @@ namespace AjaxEngine.AjaxPages
         /// <summary>
         /// 初始化并将所有控制更新消息添加到消息列表
         /// </summary>
-        public void RenderAllControls()
+        public virtual void AjaxRenderControls()
         {
-            List<Message> renderMsgList = this.OutMessages.Where(msg => msg.Type == MessageType.Render).ToList();
+            List<Message> renderMsgList = this.OutMessages
+                .Where(msg => msg.Type == MessageType.Render)
+                .ToList();
             foreach (Message msg in renderMsgList)
+            {
                 this.OutMessages.Remove(msg);
-            foreach (Control control in Page.Form.Controls)
-                this.OutMessages.Insert(0, new Message(MessageType.Render, control.ClientID, this.ControlRenderToString(control)));
+            }
+            foreach (Control control in this.WillUpdateControls)
+            {
+                if (!control.Visible) continue;
+                this.OutMessages.Insert(0,
+                    new Message(MessageType.Render,
+                    control.ClientID,
+                    this.ControlRenderToString(control)));
+            }
         }
         #endregion
 
@@ -272,27 +291,33 @@ namespace AjaxEngine.AjaxPages
         /// 更新一个控件
         /// </summary>
         /// <param name="control"></param>
-        public void UpdateControlRender(Control control)
+        public virtual void UpdateControlRender(Control control)
         {
-            this.OutMessages.Insert(0, new Message(MessageType.Render, control.ClientID, this.ControlRenderToString(control)));
+            if (!control.Visible) return;
+            //this.OutMessages.Insert(0, new Message(MessageType.Render, control.ClientID, this.ControlRenderToString(control)));
+            this.WillUpdateControls.Add(control);
         }
         /// <summary>
         /// 取消更新一个控件
         /// </summary>
         /// <param name="control"></param>
-        public void CancelUpdateControlRender(Control ct)
+        public virtual void CancelUpdateControlRender(Control control)
         {
+            this.WillUpdateControls.Remove(control);
+            /*
             foreach (Message msg in this.OutMessages)
             {
                 if (msg.Id == ct.ID)
+                {
                     this.OutMessages.Remove(msg);
-            }
+                }
+            }*/
         }
         /// <summary>
         /// 移除一个控件Ajax能力 （ControlsAjaxEnabled为true时有效）
         /// </summary>
         /// <param name="control">控件</param>
-        public void RemoveAjaxAble(Control control)
+        public virtual void RemoveAjaxAble(Control control)
         {
             try
             {
@@ -308,7 +333,7 @@ namespace AjaxEngine.AjaxPages
         /// 添加一个控件的Ajax能力 （ControlsAjaxEnabled为true时有效）
         /// </summary>
         /// <param name="control">控件</param>
-        public void AddAjaxAble(Control control)
+        public virtual void AddAjaxAble(Control control)
         {
             try
             {
@@ -325,7 +350,7 @@ namespace AjaxEngine.AjaxPages
         /// 禁用按扭的自运回发属性
         /// </summary>
         /// <param name="control">ctrl控件（其子控件中的所有Button都会受影响）</param>
-        public void ProcessButton(Control control)
+        public virtual void ProcessButton(Control control)
         {
             try
             {
@@ -353,7 +378,7 @@ namespace AjaxEngine.AjaxPages
         /// 取得页面文件名
         /// </summary>
         /// <returns>页文件名</returns>
-        public string GetPageFileName()
+        public virtual string GetPageFileName()
         {
             //
             string url = Page.Request.FilePath.ToString();
@@ -364,7 +389,7 @@ namespace AjaxEngine.AjaxPages
         /// 生成一个页面唯一字串
         /// </summary>
         /// <returns>页唯一字符</returns>
-        public string GetPageTempGuid()
+        public virtual string GetPageTempGuid()
         {
             //
             string url = Page.Request.FilePath.ToString();
@@ -379,15 +404,15 @@ namespace AjaxEngine.AjaxPages
         /// 注册脚本
         /// </summary>
         /// <param name="script">脚本</param>
-        public void RegisterStartupScript(string script)
+        public virtual void RegisterStartupScript(string script)
         {
             Page.ClientScript.RegisterStartupScript(Page.GetType(), Guid.NewGuid().ToString(), script);
         }
-        public void RegisterClientScriptInclude(string url)
+        public virtual void RegisterClientScriptInclude(string url)
         {
             Page.ClientScript.RegisterClientScriptInclude(Page.GetType(), Guid.NewGuid().ToString(), url);
         }
-        public void RegisterClientScriptBlock(string script)
+        public virtual void RegisterClientScriptBlock(string script)
         {
             Page.ClientScript.RegisterClientScriptBlock(Page.GetType(), Guid.NewGuid().ToString(), script);
         }
@@ -395,7 +420,7 @@ namespace AjaxEngine.AjaxPages
         /// 执行一段客户端脚本
         /// </summary>
         /// <param name="script">客户端脚本</param>
-        public void InvokeClientScript(string script)
+        public virtual void InvokeClientScript(string script)
         {
             if (IsAjaxPostBack)
                 this.OutMessages.Add(new Message(MessageType.Script, "script", script));
@@ -406,15 +431,15 @@ namespace AjaxEngine.AjaxPages
         /// 在客户端显示一个消息框
         /// </summary>
         /// <param name="text">消息文本</param>
-        public void ShowMessageBox(string text, string okScript)
+        public virtual void ShowMessageBox(string text, string okScript)
         {
             this.InvokeClientScript(string.Format("alert(\"{0}\");{1}", TextHelper.FilterString(text), okScript));
         }
-        public void ShowMessageBox(string text)
+        public virtual void ShowMessageBox(string text)
         {
             this.ShowMessageBox(text, "");
         }
-        public void ShowMessageBox<T>(string text, CallbackHandler<T> callback, T arg)
+        public virtual void ShowMessageBox<T>(string text, CallbackHandler<T> callback, T arg)
         {
             if (!this.IsAjaxMethod(callback.Method))
                 throw new Exception(string.Format("没有找到方法:{0}", callback.Method.Name));
@@ -428,11 +453,11 @@ namespace AjaxEngine.AjaxPages
         /// <param name="text">提示文本</param>
         /// <param name="okScript">按下“是”执行的脚本</param>
         /// <param name="cancelScript">按下否执行的脚本</param>
-        public void ShowConfirmBox(string text, string okScript, string cancelScript)
+        public virtual void ShowConfirmBox(string text, string okScript, string cancelScript)
         {
             this.InvokeClientScript("if(confirm(\"" + TextHelper.FilterString(text) + "\")){" + okScript + "}else{" + cancelScript + "}");
         }
-        public void ShowConfirmBox<T>(string text, CallbackHandler<T> okCallback, CallbackHandler<T> cancelCallback, T arg)
+        public virtual void ShowConfirmBox<T>(string text, CallbackHandler<T> okCallback, CallbackHandler<T> cancelCallback, T arg)
         {
             if (!this.IsAjaxMethod(okCallback.Method))
                 throw new Exception(string.Format("没有找到方法:{0}", okCallback.Method.Name));
@@ -448,7 +473,7 @@ namespace AjaxEngine.AjaxPages
         /// </summary>
         /// <param name="str">文本</param>
         /// <param name="ControlClinetID">控件客户端ID或Html标签ID</param>
-        public void WriteString(string str, string ControlClinetID)
+        public virtual void WriteString(string str, string ControlClinetID)
         {
             this.InvokeClientScript("document.getElementById('" + ControlClinetID + "').innerHTML+=\"" + TextHelper.FilterString(str) + "\";");
         }
@@ -456,7 +481,7 @@ namespace AjaxEngine.AjaxPages
         /// 输出字符串
         /// </summary>
         /// <param name="txt"></param>
-        public void WriteString(string txt)
+        public virtual void WriteString(string txt)
         {
             this.WriteString(txt, this.Page.Form.ClientID);
         }
@@ -465,7 +490,7 @@ namespace AjaxEngine.AjaxPages
         /// </summary>
         /// <param name="url">url</param>
         /// <param name="target">目标窗口</param>
-        public void OpenWindow(string url, string target, string option)
+        public virtual void OpenWindow(string url, string target, string option)
         {
             this.InvokeClientScript(string.Format("var __win=window.open(\"{0}\",\"{1}\",\"{2}\");__win.focus();", TextHelper.FilterString(url), TextHelper.FilterString(target), TextHelper.FilterString(option)));
         }
@@ -474,7 +499,7 @@ namespace AjaxEngine.AjaxPages
         /// </summary>
         /// <param name="url">url</param>
         /// <param name="target">目标窗口</param>
-        public void OpenWindow<T1, T2>(string url, string target, string option, T1 arg, CallbackHandler<T2> callback)
+        public virtual void OpenWindow<T1, T2>(string url, string target, string option, T1 arg, CallbackHandler<T2> callback)
         {
             if (url.Contains("?"))
                 url += string.Format("&__window_callback={0}.{1}&__window_args={2}", this.AjaxMethodNamespace, callback.Method.Name, this.JsonSerializer.Serialize(arg));
@@ -482,7 +507,7 @@ namespace AjaxEngine.AjaxPages
                 url += string.Format("?__window_callback={0}.{1}&__window_args={2}", this.AjaxMethodNamespace, callback.Method.Name, this.JsonSerializer.Serialize(arg));
             this.OpenWindow(url, target, option);
         }
-        public T GetWindowArgs<T>()
+        public virtual T GetWindowArgs<T>()
         {
             string value = this.Page.Request.QueryString["__window_args"];
             if (!string.IsNullOrEmpty(value))
@@ -491,12 +516,12 @@ namespace AjaxEngine.AjaxPages
             }
             return default(T);
         }
-        public void ReturnValue(object value)
+        public virtual void ReturnValue(object value)
         {
             string callback = this.Page.Request.QueryString["__window_callback"];
             this.InvokeClientScript(string.Format("window.opener&&window.opener.{0}({1});", callback, this.JsonSerializer.Serialize(value)));
         }
-        public void CloseWindow()
+        public virtual void CloseWindow()
         {
             this.InvokeClientScript("window.close();");
         }
@@ -504,7 +529,7 @@ namespace AjaxEngine.AjaxPages
         /// 转到指定的url
         /// </summary>
         /// <param name="url">url</param>
-        public void GotoUrl(string url)
+        public virtual void GotoUrl(string url)
         {
             if (IsAjaxPostBack)
                 this.InvokeClientScript("location.href=\"" + TextHelper.FilterString(url) + "\";");
