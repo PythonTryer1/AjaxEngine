@@ -1,21 +1,10 @@
-﻿using System;
-using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
+﻿using AjaxEngine.Utils;
+using System;
 using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using AjaxEngine;
-using System.Collections;
-using System.Collections.Generic ;
-using System.Collections.Specialized;
-using AjaxEngine.Utils;
 
 namespace AjaxEngine.AjaxPages
 {
-   
+
     /// <summary>
     /// 一个HMTL元素
     /// </summary>
@@ -46,7 +35,7 @@ namespace AjaxEngine.AjaxPages
         }
         public void GetValueFormClient()
         {
-             _Value = _page.Request[_HtmlName];
+            _Value = _page.Request[_HtmlName];
         }
         private string _HtmlName;
         /// <summary>
@@ -56,7 +45,7 @@ namespace AjaxEngine.AjaxPages
         {
             get
             {
-                return _HtmlName ;
+                return _HtmlName;
             }
             set
             {
@@ -76,8 +65,8 @@ namespace AjaxEngine.AjaxPages
             }
             set
             {
-                string str="document.getElementsByName('" + _HtmlName + "')[0].value=\"" + value + "\";";
-               // _AjaxEngine.OutMessages.Add(new Message(MessageType.Script, str));
+                string str = "document.getElementsByName('" + _HtmlName + "')[0].value=\"" + value + "\";";
+                // _AjaxEngine.OutMessages.Add(new Message(MessageType.Script, str));
                 _AjaxEngine.InvokeClientScript(str);
                 _Value = value;
             }
@@ -96,7 +85,7 @@ namespace AjaxEngine.AjaxPages
                     string str = "function ________SetCheckValue(){var els=document.getElementsByName('" + _HtmlName + "');var elscount=els.length;for(var i=0;i<elscount;i++){if(els[i].value=='" + TextHelper.FilterString(val) + "'){els[i].checked='checked';}} }________SetCheckValue();";
                     // _AjaxEngine.OutMessages.Add(new Message(MessageType.Script, str));
                     _AjaxEngine.InvokeClientScript(str);
-              }
+                }
                 _Value = (value);
             }
         }

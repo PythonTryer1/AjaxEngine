@@ -9,7 +9,6 @@
 
 using System;
 using System.Web.UI;
-using StatePersisters = AjaxEngine.AjaxPages.StatePersisters;
 
 namespace AjaxEngine.AjaxPages
 {

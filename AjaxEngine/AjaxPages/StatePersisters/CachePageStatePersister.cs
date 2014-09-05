@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Web.UI;
 using System.Web.Caching;
-using System.Web;
-using System.IO;
+using System.Web.UI;
 
 
 namespace AjaxEngine.AjaxPages.StatePersisters
@@ -26,7 +22,7 @@ namespace AjaxEngine.AjaxPages.StatePersisters
         /// </summary>
         public override void Load()
         {
-            if (TheCache.Count >0 && TheCache["__Houfeng_AjaxEngine_" + this.GetUniqueKey()] !=null )
+            if (TheCache.Count > 0 && TheCache["__Houfeng_AjaxEngine_" + this.GetUniqueKey()] != null)
             {
                 Pair pair = (Pair)this.Page.Cache["__Houfeng_AjaxEngine_" + this.GetUniqueKey()];
                 base.ViewState = pair.First;
@@ -63,7 +59,7 @@ namespace AjaxEngine.AjaxPages.StatePersisters
                         timeout = Page.Session.Timeout;
                 }
                 catch
-                {}
+                { }
                 return timeout;
             }
         }

@@ -8,21 +8,16 @@
  * 2011-11-7,Houfeng,添加文件说明，更新版本号为0.1
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel.Dispatcher;
-using System.Text;
-using System.Web.Script.Serialization;
 using AjaxEngine.Json;
 using AjaxEngine.Json.Converters;
+using System;
 
 namespace AjaxEngine.Serializes
 {
     public class JsonSerializer : ISerializer
     {
         //private JavaScriptSerializer serializer = new JavaScriptSerializer();
-        
+
         public string Serialize(object obj)
         {
             var dateTimeFormat = new IsoDateTimeConverter();

@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Web.UI;
-using System.Web.Caching;
-using System.Web;
 using System.IO;
-using System.Web.SessionState;
+using System.Web.UI;
 
 namespace AjaxEngine.AjaxPages.StatePersisters
 {

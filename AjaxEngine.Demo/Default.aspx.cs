@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using AjaxEngine;
-using AjaxEngine.AjaxPages;
-using System.Threading;
+﻿using AjaxEngine.AjaxPages;
 using AjaxEngine.Utils;
+using System;
 
 namespace AjaxEngine.Demo
 {

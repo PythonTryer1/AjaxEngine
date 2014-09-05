@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Web.UI;
-using System.Web.Caching;
-using System.Web;
 using System.IO;
+using System.Web.UI;
 
 
 namespace AjaxEngine.AjaxPages.StatePersisters
 {
     [Serializable]
-    public class FilePageStatePersister : AjaxPageStatePersister 
+    public class FilePageStatePersister : AjaxPageStatePersister
     {
         public FilePageStatePersister(Page page) : base(page) { }
         public override void Load()
@@ -58,7 +54,7 @@ namespace AjaxEngine.AjaxPages.StatePersisters
                 if (!Directory.Exists(folderName))
                     Directory.CreateDirectory(folderName);
                 //
-                string fileName = this.GetUniqueKey()+".vs";
+                string fileName = this.GetUniqueKey() + ".vs";
                 return Path.Combine(folderName, fileName);
             }
         }

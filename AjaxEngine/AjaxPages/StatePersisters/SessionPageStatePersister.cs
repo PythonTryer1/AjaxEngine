@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Web.UI;
-using System.Web.Caching;
-using System.Web;
-using System.IO;
-using System.Web.SessionState;
 
 
 namespace AjaxEngine.AjaxPages.StatePersisters
 {
     [Serializable]
-    public class SessionPageStatePersister : AjaxPageStatePersister 
+    public class SessionPageStatePersister : AjaxPageStatePersister
     {
         public SessionPageStatePersister(Page page) : base(page) { }
         public override void Load()
@@ -27,7 +21,7 @@ namespace AjaxEngine.AjaxPages.StatePersisters
             { pair.First = base.ViewState; }
             if (base.ControlState != null)
             { pair.Second = base.ControlState; }
-            this.Page.Session["__Houfeng_AjaxEngine_"+this.GetUniqueKey()] =pair; 
+            this.Page.Session["__Houfeng_AjaxEngine_" + this.GetUniqueKey()] = pair;
         }
     }
 }

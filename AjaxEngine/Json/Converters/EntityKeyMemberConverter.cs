@@ -24,121 +24,121 @@
 #endregion
 
 #if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
-using System;
 using AjaxEngine.Json.Serialization;
-using System.Globalization;
 using AjaxEngine.Json.Utilities;
+using System;
+using System.Globalization;
 
 namespace AjaxEngine.Json.Converters
 {
-  internal interface IEntityKeyMember
-  {
-    string Key { get; set; }
-    object Value { get; set; }
-  }
-
-  /// <summary>
-  /// Converts an Entity Framework EntityKey to and from JSON.
-  /// </summary>
-  public class EntityKeyMemberConverter : JsonConverter
-  {
-    private const string EntityKeyMemberFullTypeName = "System.Data.EntityKeyMember";
+    internal interface IEntityKeyMember
+    {
+        string Key { get; set; }
+        object Value { get; set; }
+    }
 
     /// <summary>
-    /// Writes the JSON representation of the object.
+    /// Converts an Entity Framework EntityKey to and from JSON.
     /// </summary>
-    /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public class EntityKeyMemberConverter : JsonConverter
     {
-        try
+        private const string EntityKeyMemberFullTypeName = "System.Data.EntityKeyMember";
+
+        /// <summary>
+        /// Writes the JSON representation of the object.
+        /// </summary>
+        /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            IEntityKeyMember entityKeyMember = DynamicWrapper.CreateWrapper<IEntityKeyMember>(value);
-            Type keyType = (entityKeyMember.Value != null) ? entityKeyMember.Value.GetType() : null;
-
-            writer.WriteStartObject();
-            writer.WritePropertyName("Key");
-            writer.WriteValue(entityKeyMember.Key);
-            writer.WritePropertyName("Type");
-            writer.WriteValue((keyType != null) ? keyType.FullName : null);
-
-            writer.WritePropertyName("Value");
-
-            if (keyType != null)
+            try
             {
-                string valueJson;
-                if (JsonSerializerInternalWriter.TryConvertToString(entityKeyMember.Value, keyType, out valueJson))
-                    writer.WriteValue(valueJson);
+                IEntityKeyMember entityKeyMember = DynamicWrapper.CreateWrapper<IEntityKeyMember>(value);
+                Type keyType = (entityKeyMember.Value != null) ? entityKeyMember.Value.GetType() : null;
+
+                writer.WriteStartObject();
+                writer.WritePropertyName("Key");
+                writer.WriteValue(entityKeyMember.Key);
+                writer.WritePropertyName("Type");
+                writer.WriteValue((keyType != null) ? keyType.FullName : null);
+
+                writer.WritePropertyName("Value");
+
+                if (keyType != null)
+                {
+                    string valueJson;
+                    if (JsonSerializerInternalWriter.TryConvertToString(entityKeyMember.Value, keyType, out valueJson))
+                        writer.WriteValue(valueJson);
+                    else
+                        writer.WriteValue(entityKeyMember.Value);
+                }
                 else
-                    writer.WriteValue(entityKeyMember.Value);
-            }
-            else
-            {
-                writer.WriteNull();
-            }
+                {
+                    writer.WriteNull();
+                }
 
-            writer.WriteEndObject();
+                writer.WriteEndObject();
+            }
+            catch { }
         }
-        catch { }
+
+        private static void ReadAndAssertProperty(JsonReader reader, string propertyName)
+        {
+            ReadAndAssert(reader);
+
+            if (reader.TokenType != JsonToken.PropertyName || reader.Value.ToString() != propertyName)
+                throw new JsonSerializationException("Expected JSON property '{0}'.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+        }
+
+        private static void ReadAndAssert(JsonReader reader)
+        {
+            if (!reader.Read())
+                throw new JsonSerializationException("Unexpected end.");
+        }
+
+        /// <summary>
+        /// Reads the JSON representation of the object.
+        /// </summary>
+        /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <param name="existingValue">The existing value of object being read.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <returns>The object value.</returns>
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            IEntityKeyMember entityKeyMember = DynamicWrapper.CreateWrapper<IEntityKeyMember>(Activator.CreateInstance(objectType));
+
+            ReadAndAssertProperty(reader, "Key");
+            ReadAndAssert(reader);
+            entityKeyMember.Key = reader.Value.ToString();
+
+            ReadAndAssertProperty(reader, "Type");
+            ReadAndAssert(reader);
+            string type = reader.Value.ToString();
+
+            Type t = Type.GetType(type);
+
+            ReadAndAssertProperty(reader, "Value");
+            ReadAndAssert(reader);
+            entityKeyMember.Value = serializer.Deserialize(reader, t);
+
+            ReadAndAssert(reader);
+
+            return DynamicWrapper.GetUnderlyingObject(entityKeyMember);
+        }
+
+        /// <summary>
+        /// Determines whether this instance can convert the specified object type.
+        /// </summary>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>
+        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool CanConvert(Type objectType)
+        {
+            return (objectType.AssignableToTypeName(EntityKeyMemberFullTypeName));
+        }
     }
-
-    private static void ReadAndAssertProperty(JsonReader reader, string propertyName)
-    {
-      ReadAndAssert(reader);
-
-      if (reader.TokenType != JsonToken.PropertyName || reader.Value.ToString() != propertyName)
-        throw new JsonSerializationException("Expected JSON property '{0}'.".FormatWith(CultureInfo.InvariantCulture, propertyName));
-    }
-
-    private static void ReadAndAssert(JsonReader reader)
-    {
-      if (!reader.Read())
-        throw new JsonSerializationException("Unexpected end.");
-    }
-
-    /// <summary>
-    /// Reads the JSON representation of the object.
-    /// </summary>
-    /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
-    /// <param name="objectType">Type of the object.</param>
-    /// <param name="existingValue">The existing value of object being read.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    /// <returns>The object value.</returns>
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-    {
-      IEntityKeyMember entityKeyMember = DynamicWrapper.CreateWrapper<IEntityKeyMember>(Activator.CreateInstance(objectType));
-
-      ReadAndAssertProperty(reader, "Key");
-      ReadAndAssert(reader);
-      entityKeyMember.Key = reader.Value.ToString();
-
-      ReadAndAssertProperty(reader, "Type");
-      ReadAndAssert(reader);
-      string type = reader.Value.ToString();
-
-      Type t = Type.GetType(type);
-
-      ReadAndAssertProperty(reader, "Value");
-      ReadAndAssert(reader);
-      entityKeyMember.Value = serializer.Deserialize(reader, t);
-
-      ReadAndAssert(reader);
-
-      return DynamicWrapper.GetUnderlyingObject(entityKeyMember);
-    }
-
-    /// <summary>
-    /// Determines whether this instance can convert the specified object type.
-    /// </summary>
-    /// <param name="objectType">Type of the object.</param>
-    /// <returns>
-    /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-    /// </returns>
-    public override bool CanConvert(Type objectType)
-    {
-      return (objectType.AssignableToTypeName(EntityKeyMemberFullTypeName));
-    }
-  }
 }
 #endif

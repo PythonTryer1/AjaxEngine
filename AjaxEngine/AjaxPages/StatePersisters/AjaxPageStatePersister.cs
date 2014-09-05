@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Web.UI;
-using System.Web.Caching;
-using System.Web;
-using System.IO;
-using System.Web.SessionState;
 
 namespace AjaxEngine.AjaxPages.StatePersisters
 {
@@ -28,7 +22,7 @@ namespace AjaxEngine.AjaxPages.StatePersisters
         public string GetUniqueKey()
         {
             string UniqueKey = Page.Request["__UNIQUEKEY"];
-            if (UniqueKey== null || UniqueKey.Trim()== "")
+            if (UniqueKey == null || UniqueKey.Trim() == "")
             {
                 UniqueKey = Page.Session.SessionID + DateTime.Now.Ticks;
             }

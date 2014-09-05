@@ -7,20 +7,21 @@
  * 
  *********************************************************/
 
+using AjaxEngine.Extends;
+using AjaxEngine.Reflection;
+using AjaxEngine.Serializes;
+using AjaxEngine.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Web;
 using System.Web.SessionState;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using AjaxEngine.Extends;
-using AjaxEngine.Reflection;
-using AjaxEngine.Serializes;
-using AjaxEngine.Utils;
 
 
 namespace AjaxEngine.AjaxPages
@@ -410,7 +411,7 @@ namespace AjaxEngine.AjaxPages
         }
         public virtual void RegisterClientScriptInclude(string url)
         {
-            Page.ClientScript.RegisterClientScriptInclude(Page.GetType(), Guid.NewGuid().ToString(), url);
+            Page.ClientScript.RegisterClientScriptInclude(Page.GetType(), Guid.NewGuid().ToString(), this.Page.ResolveUrl(url));
         }
         public virtual void RegisterClientScriptBlock(string script)
         {
@@ -433,7 +434,7 @@ namespace AjaxEngine.AjaxPages
         /// <param name="text">消息文本</param>
         public virtual void ShowMessageBox(string text, string okScript)
         {
-            this.InvokeClientScript(string.Format("alert(\"{0}\");{1}", TextHelper.FilterString(text), okScript));
+            this.InvokeClientScript(string.Format("AjaxEngine.dialog.alert(\"{0}\",function(){{ {1} }});", TextHelper.FilterString(text), okScript));
         }
         public virtual void ShowMessageBox(string text)
         {
@@ -455,7 +456,7 @@ namespace AjaxEngine.AjaxPages
         /// <param name="cancelScript">按下否执行的脚本</param>
         public virtual void ShowConfirmBox(string text, string okScript, string cancelScript)
         {
-            this.InvokeClientScript("if(confirm(\"" + TextHelper.FilterString(text) + "\")){" + okScript + "}else{" + cancelScript + "}");
+            this.InvokeClientScript(string.Format("AjaxEngine.dialog.confirm(\"{0}\",function(){{ {1} }},function(){{ {2} }});", TextHelper.FilterString(text), okScript, cancelScript));
         }
         public virtual void ShowConfirmBox<T>(string text, CallbackHandler<T> okCallback, CallbackHandler<T> cancelCallback, T arg)
         {
@@ -472,10 +473,10 @@ namespace AjaxEngine.AjaxPages
         /// 向指定的控件中输出一段字符串(并不能保持状态)
         /// </summary>
         /// <param name="str">文本</param>
-        /// <param name="ControlClinetID">控件客户端ID或Html标签ID</param>
-        public virtual void WriteString(string str, string ControlClinetID)
+        /// <param name="controlClinetId">控件客户端ID或Html标签ID</param>
+        public virtual void WriteString(string str, string controlClinetId)
         {
-            this.InvokeClientScript("document.getElementById('" + ControlClinetID + "').innerHTML+=\"" + TextHelper.FilterString(str) + "\";");
+            this.InvokeClientScript("document.getElementById('" + controlClinetId + "').innerHTML+=\"" + TextHelper.FilterString(str) + "\";");
         }
         /// <summary>
         /// 输出字符串
@@ -492,7 +493,7 @@ namespace AjaxEngine.AjaxPages
         /// <param name="target">目标窗口</param>
         public virtual void OpenWindow(string url, string target, string option)
         {
-            this.InvokeClientScript(string.Format("var __win=window.open(\"{0}\",\"{1}\",\"{2}\");__win.focus();", TextHelper.FilterString(url), TextHelper.FilterString(target), TextHelper.FilterString(option)));
+            this.InvokeClientScript(string.Format("AjaxEngine.dialog.open(\"{0}\",\"{1}\",\"{2}\");", this.Page.ResolveUrl(TextHelper.FilterString(url)), TextHelper.FilterString(target), TextHelper.FilterString(option)));
         }
         /// <summary>
         /// 转到指定的url
@@ -502,14 +503,14 @@ namespace AjaxEngine.AjaxPages
         public virtual void OpenWindow<T1, T2>(string url, string target, string option, T1 arg, CallbackHandler<T2> callback)
         {
             if (url.Contains("?"))
-                url += string.Format("&__window_callback={0}.{1}&__window_args={2}", this.AjaxMethodNamespace, callback.Method.Name, this.JsonSerializer.Serialize(arg));
+                url += string.Format("&__dialog_callback={0}.{1}&__dialog_args={2}", this.AjaxMethodNamespace, callback.Method.Name, HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
             else
-                url += string.Format("?__window_callback={0}.{1}&__window_args={2}", this.AjaxMethodNamespace, callback.Method.Name, this.JsonSerializer.Serialize(arg));
+                url += string.Format("?__dialog_callback={0}.{1}&__dialog_args={2}", this.AjaxMethodNamespace, callback.Method.Name, HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
             this.OpenWindow(url, target, option);
         }
         public virtual T GetWindowArgs<T>()
         {
-            string value = this.Page.Request.QueryString["__window_args"];
+            string value = this.Page.Request.QueryString["__dialog_args"];
             if (!string.IsNullOrEmpty(value))
             {
                 return this.JsonSerializer.Deserialize<T>(value);
@@ -518,12 +519,12 @@ namespace AjaxEngine.AjaxPages
         }
         public virtual void ReturnValue(object value)
         {
-            string callback = this.Page.Request.QueryString["__window_callback"];
-            this.InvokeClientScript(string.Format("window.opener&&window.opener.{0}({1});", callback, this.JsonSerializer.Serialize(value)));
+            string callback = this.Page.Request.QueryString["__dialog_callback"];
+            this.InvokeClientScript(string.Format("var __opener=AjaxEngine.dialog.getOpener();__opener&&__opener.{0}({1});", callback, this.JsonSerializer.Serialize(value)));
         }
         public virtual void CloseWindow()
         {
-            this.InvokeClientScript("window.close();");
+            this.InvokeClientScript("AjaxEngine.dialog.close();");
         }
         /// <summary>
         /// 转到指定的url
@@ -532,7 +533,7 @@ namespace AjaxEngine.AjaxPages
         public virtual void GotoUrl(string url)
         {
             if (IsAjaxPostBack)
-                this.InvokeClientScript("location.href=\"" + TextHelper.FilterString(url) + "\";");
+                this.InvokeClientScript("location.href=\"" + this.Page.ResolveUrl(TextHelper.FilterString(url)) + "\";");
             else
                 Page.Response.Redirect(url);
         }

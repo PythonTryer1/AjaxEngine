@@ -1,36 +1,61 @@
-/// <reference path="jquery.js" />
-
 /*
 * Author:Houfeng
 * Email:admin@xhou.net
 */
-
-if (navigator.userAgent.indexOf("Gecko/") > -1) {
-    HTMLElement.prototype.__defineGetter__("outerHTML", function () {
-        var a = this.attributes, str = "<" + this.tagName, i = 0; for (; i < a.length; i++)
-            if (a[i].specified)
-                str += " " + a[i].name + '="' + a[i].value + '"';
-        if (!this.canHaveChildren)
-            return str + " />";
-        return str + ">" + this.innerHTML + "</" + this.tagName + ">";
-    });
-    HTMLElement.prototype.__defineSetter__("outerHTML", function (s) {
-        var r = this.ownerDocument.createRange();
-        r.setStartBefore(this);
-        var df = r.createContextualFragment(s);
-        this.parentNode.replaceChild(df, this);
-        return s;
-    });
-    HTMLElement.prototype.__defineGetter__("canHaveChildren", function () {
-        return !/^(area|base|basefont|col|frame|hr|img|br|input|isindex|link|meta|param)$/.test(this.tagName.toLowerCase());
-    });
-}
-
-//---
-window.AjaxEngine = window.AjaxEngine || {};
-(function (owner) {
-    owner.onRequestBegin = owner.onRequestBegin || window.onRequestBegin;
-    owner.onRequestEnd = owner.onRequestEnd || window.onRequestEnd;
+(function (env) {
+    /********    extends outerHTML    ********/
+    if (navigator.userAgent.indexOf("Gecko/") > -1) {
+        HTMLElement.prototype.__defineGetter__("outerHTML", function () {
+            var a = this.attributes, str = "<" + this.tagName, i = 0; for (; i < a.length; i++)
+                if (a[i].specified)
+                    str += " " + a[i].name + '="' + a[i].value + '"';
+            if (!this.canHaveChildren)
+                return str + " />";
+            return str + ">" + this.innerHTML + "</" + this.tagName + ">";
+        });
+        HTMLElement.prototype.__defineSetter__("outerHTML", function (s) {
+            var r = this.ownerDocument.createRange();
+            r.setStartBefore(this);
+            var df = r.createContextualFragment(s);
+            this.parentNode.replaceChild(df, this);
+            return s;
+        });
+        HTMLElement.prototype.__defineGetter__("canHaveChildren", function () {
+            return !/^(area|base|basefont|col|frame|hr|img|br|input|isindex|link|meta|param)$/.test(this.tagName.toLowerCase());
+        });
+    }
+    /********    START    ********/
+    var owner = env.AjaxEngine = env.AjaxEngine || {};
+    owner.onRequestBegin = owner.onRequestBegin || env.onRequestBegin;
+    owner.onRequestEnd = owner.onRequestEnd || env.onRequestEnd;
+    //¶Ô»°¿ò
+    owner.dialog = owner.dialog || {};
+    owner.dialog.confirm = function (msg, onOk, onCancel) {
+        if (confirm(msg)) {
+            if (onOk) onOk();
+        } else {
+            if (onCancel) onCancel();
+        }
+    };
+    owner.dialog.alert = function (msg, callback) {
+        alert(msg)
+        if (callback) callback();
+    };
+    owner.dialog.open = function (url, target, features, replace) {
+        var dlg = window.open(url, target, features, replace);
+        owner.dialog.focus(dlg);
+        return dlg;
+    };
+    owner.dialog.close = function () {
+        window.close();
+    };
+    owner.dialog.getOpener = function () {
+        return window.opener;
+    };
+    owner.dialog.focus = function (dlg) {
+        dlg.focus();
+    };
+    //----
     owner.wrapUrl = owner.wrapUr || function (url) {
         var app = this;
         if (url.indexOf('?') > -1)
@@ -161,7 +186,7 @@ window.AjaxEngine = window.AjaxEngine || {};
         }
     };
     //
-    if (__ControlAjaxEnabled)
+    if (__ControlAjaxEnabled) {
         __doPostBack = owner.doPostBack;
-
-}(window.AjaxEngine));
+    }
+}(this));

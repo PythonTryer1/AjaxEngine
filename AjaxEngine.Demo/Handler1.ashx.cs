@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using AjaxEngine;
-using AjaxEngine.AjaxHandlers;
-using System.Drawing;
+﻿using AjaxEngine.AjaxHandlers;
 using AjaxEngine.Utils;
+using System;
+using System.Drawing;
+using System.Web;
 
 namespace AjaxEngine.Demo
 {

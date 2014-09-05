@@ -1,11 +1,9 @@
-﻿using System;
+﻿using AjaxEngine.Extends;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
-using AjaxEngine.Reflection;
-using AjaxEngine.Serializes;
-using AjaxEngine.Extends;
+using System.Text;
 
 namespace AjaxEngine.Utils
 {

@@ -1,11 +1,8 @@
-﻿using System;
+﻿using AjaxEngine.Extends;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Net;
 using System.Net.Cache;
 using System.Text;
-using AjaxEngine.Extends;
 
 namespace AjaxEngine.AjaxHandlers
 {

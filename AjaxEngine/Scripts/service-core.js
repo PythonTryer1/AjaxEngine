@@ -1,13 +1,11 @@
-/// <reference path="jquery.js" />
-
 /*
 * Author:Houfeng
 * Email:admin@xhou.net
 */
-window.AjaxEngine = window.AjaxEngine || {};
-(function (owner) {
-    owner.onRequestBegin = owner.onRequestBegin || window.onRequestBegin;
-    owner.onRequestEnd = owner.onRequestEnd || window.onRequestEnd;
+(function (env) {
+    var owner = env.AjaxEngine = env.AjaxEngine || {};
+    owner.onRequestBegin = owner.onRequestBegin || env.onRequestBegin;
+    owner.onRequestEnd = owner.onRequestEnd || env.onRequestEnd;
     owner.wrapUrl = owner.wrapUrl || function (url) {
         var app = this;
         if (url.indexOf('?') > -1)
@@ -61,8 +59,6 @@ window.AjaxEngine = window.AjaxEngine || {};
             var value = (typeof data[name] === "string") ? data[name] : owner.jsonToString(data[name]);
             formData.push({ "name": name, "value": value });
         }
-        //alert(owner.jsonToString(formData));
-        //--
         var reutrnResult = null;
         owner.ajax({
             type: "post",
@@ -81,4 +77,4 @@ window.AjaxEngine = window.AjaxEngine || {};
         });
         return reutrnResult;
     };
-}(window.AjaxEngine));
+}(this));
