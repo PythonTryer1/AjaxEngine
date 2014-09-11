@@ -14,11 +14,23 @@
             url += "?__t=" + Math.random();
         return url;
     };
+    owner.isArray = function (obj) {
+        var v1 = Object.prototype.toString.call(obj) === '[object Array]';
+        var v2 = obj instanceof Array;
+        var v3 = (obj.length instanceof Array) && obj[0];
+        var v3 = (obj.length instanceof Array) && (typeof obj.splice === 'function');
+        return v1 || v2 || v3 || v4;
+    };
     owner.stringToJson = owner.stringToJson || function (str) {
-        var jsonObject = (new Function("return " + str + ";"))();
-        return jsonObject;
+        if (env.JSON && env.JSON.parse) {
+            return env.JSON.parse(str);
+        }
+        return (new Function("return " + str + ";"))();
     };
     owner.jsonToString = owner.jsonToString || function (obj) {
+        if (env.JSON && env.JSON.stringify) {
+            return env.JSON.stringify(obj);
+        }
         var THIS = this;
         switch (typeof (obj)) {
             case 'string':
@@ -26,7 +38,7 @@
             case 'array':
                 return '[' + obj.map(THIS.jsonToString).join(',') + ']';
             case 'object':
-                if (obj instanceof Array) {
+                if (owner.isArray(obj)) {
                     var strArr = [];
                     var len = obj.length;
                     for (var i = 0; i < len; i++) {
