@@ -3,6 +3,9 @@
 * Email:admin@xhou.net
 */
 (function (env) {
+    if (!env.jQuery) {
+        throw "jQuery not found.";
+    }
     /********    extends outerHTML    ********/
     if (navigator.userAgent.indexOf("Gecko/") > -1) {
         HTMLElement.prototype.__defineGetter__("outerHTML", function () {
@@ -123,9 +126,10 @@
             return element;
         }
     };
-    owner.ajax = owner.ajax || jQuery.ajax;
+    owner.query = env.jQuery;
+    owner.ajax = owner.ajax || env.jQuery.ajax;
     owner.serializeData = owner.serializeData || function () {
-        var formData = $(theForm).serializeArray();
+        var formData = owner.query(theForm).serializeArray();
         theForm.__EVENTTARGET.value = "";
         theForm.__EVENTARGUMENT.value = "";
         return formData;
@@ -170,7 +174,7 @@
                 returnResult = msg.Context;
             }
             else if (msg.Type === 1) {
-                var element = AjaxEngine.$(msg.Id);
+                var element = owner.$(msg.Id);
                 if (element && element.outerHTML) {
                     element.outerHTML = msg.Context;
                 }

@@ -3,6 +3,9 @@
 * Email:admin@xhou.net
 */
 (function (env) {
+    if (!env.jQuery) {
+        throw "jQuery not found.";
+    }
     var owner = env.AjaxEngine = env.AjaxEngine || {};
     owner.onRequestBegin = owner.onRequestBegin || env.onRequestBegin;
     owner.onRequestEnd = owner.onRequestEnd || env.onRequestEnd;
@@ -62,7 +65,7 @@
                 return obj;
         }
     };
-    owner.ajax = owner.ajax || jQuery.ajax;
+    owner.ajax = owner.ajax || env.jQuery.ajax;
     owner.callService = owner.callService || function (url, data, callback) {
         if (owner.onRequestBegin)
             owner.onRequestBegin();

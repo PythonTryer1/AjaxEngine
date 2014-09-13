@@ -486,6 +486,23 @@ namespace AjaxEngine.AjaxPages
         {
             this.WriteString(txt, this.Page.Form.ClientID);
         }
+        public virtual string ResolveUrl(string url)
+        {
+            /*
+            if (string.IsNullOrEmpty(url)) return null;
+            if (url.ToLower().StartsWith("http://") ||
+                url.ToLower().StartsWith("https://") ||
+                url.ToLower().StartsWith("mailto:"))
+            {
+                return url;
+            }*/
+            url = this.Page.ResolveUrl(url);
+            if (url.StartsWith("/"))
+            {
+                url = Page.Request.Url.GetLeftPart(UriPartial.Authority) + url;
+            }
+            return url;
+        }
         /// <summary>
         /// 转到指定的url
         /// </summary>
@@ -493,7 +510,11 @@ namespace AjaxEngine.AjaxPages
         /// <param name="target">目标窗口</param>
         public virtual void OpenWindow(string url, string target, string option)
         {
-            this.InvokeClientScript(string.Format("AjaxEngine.dialog.open(\"{0}\",\"{1}\",\"{2}\");", this.Page.ResolveUrl(TextHelper.FilterString(url)), TextHelper.FilterString(target), TextHelper.FilterString(option)));
+            var pageUrl = this.ResolveUrl(TextHelper.FilterString(url));
+            this.InvokeClientScript(string.Format("AjaxEngine.dialog.open(\"{0}\",\"{1}\",\"{2}\");",
+                pageUrl,
+                TextHelper.FilterString(target),
+                TextHelper.FilterString(option)));
         }
         /// <summary>
         /// 转到指定的url
@@ -503,9 +524,17 @@ namespace AjaxEngine.AjaxPages
         public virtual void OpenWindow<T1, T2>(string url, string target, string option, T1 arg, CallbackHandler<T2> callback)
         {
             if (url.Contains("?"))
-                url += string.Format("&__dialog_callback={0}.{1}&__dialog_args={2}", this.AjaxMethodNamespace, callback.Method.Name, HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
+            {
+                url += string.Format("&__dialog_callback={0}.{1}&__dialog_args={2}",
+                    this.AjaxMethodNamespace, callback.Method.Name,
+                    HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
+            }
             else
-                url += string.Format("?__dialog_callback={0}.{1}&__dialog_args={2}", this.AjaxMethodNamespace, callback.Method.Name, HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
+            {
+                url += string.Format("?__dialog_callback={0}.{1}&__dialog_args={2}",
+                    this.AjaxMethodNamespace, callback.Method.Name,
+                    HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
+            }
             this.OpenWindow(url, target, option);
         }
         public virtual T GetWindowArgs<T>()
