@@ -8,6 +8,8 @@ namespace AjaxEngine.Demo
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            var x = this.Request.Url;
+
             this.PageEngine.AutoUpdateControls = true;
             // Thread.Sleep(3000);
         }

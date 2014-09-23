@@ -138,9 +138,7 @@ namespace AjaxEngine.AjaxHandlers
             {
                 if (!string.IsNullOrEmpty(allowHttpMethods) && allowHttpMethods.ToUpper().Split(',').Contains(httpMethod.ToUpper()))
                 {
-                    ParameterInfo[] pareameterInfos = ParameterFactory.GetPropertyInfo(methodInfo);
-                    object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
-                    return methodInfo.Invoke(this.ServiceEntity, parameterValueList);
+                    return this.InvokeEntityMethod(methodInfo);
                 }
                 else
                 {
@@ -151,6 +149,12 @@ namespace AjaxEngine.AjaxHandlers
             {
                 return HandleError("没有找到指定调用方法");
             }
+        }
+        protected virtual object InvokeEntityMethod(MethodInfo methodInfo)
+        {
+            ParameterInfo[] pareameterInfos = ParameterFactory.GetPropertyInfo(methodInfo);
+            object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
+            return methodInfo.Invoke(this.ServiceEntity, parameterValueList);
         }
         protected virtual object[] GetEntityParameterValueList(ParameterInfo[] pareameterInfos)
         {
