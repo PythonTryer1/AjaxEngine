@@ -60,7 +60,7 @@ namespace AjaxEngine.Utils
     </div>
     <div id='content'><div id='serviceSumary'>说明 : {entitySumary}</div>".Replace("{entity}", entityName).Replace("{entitySumary}", entityDescription));
 
-            List<MethodInfo> methodList = this.Entity.GetMethods().ToList().Where(m => m.GetAttribute<AjaxMethodAttribute>() != null).ToList();
+            List<MethodInfo> methodList = this.Entity.GetMethodInfos().ToList().Where(m => m.GetAttribute<AjaxMethodAttribute>() != null).ToList();
             foreach (MethodInfo method in methodList)
             {
                 string methodDescription = "";

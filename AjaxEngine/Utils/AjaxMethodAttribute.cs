@@ -15,9 +15,13 @@ namespace AjaxEngine.Utils
     /// 将一个方法标识为可在客户端调用的方法
     /// </summary>
     [Serializable]
-    public sealed class AjaxMethodAttribute : System.Attribute
+    public sealed class AjaxMethodAttribute : Attribute
     {
         private string _HttpMethod = "POST,GET";
+
+        /// <summary>
+        /// 允许的 Http 请求方法
+        /// </summary>
         public string HttpMethod
         {
             get
@@ -29,6 +33,11 @@ namespace AjaxEngine.Utils
                 _HttpMethod = (value ?? "");
             }
         }
+
+        /// <summary>
+        /// 别名
+        /// </summary>
+        public string Name { get; set; }
 
         /// <summary>
         /// 构造

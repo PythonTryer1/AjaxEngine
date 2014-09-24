@@ -152,7 +152,7 @@ namespace AjaxEngine.AjaxHandlers
         }
         protected virtual object InvokeEntityMethod(MethodInfo methodInfo)
         {
-            ParameterInfo[] pareameterInfos = ParameterFactory.GetPropertyInfo(methodInfo);
+            ParameterInfo[] pareameterInfos = ParameterFactory.GetParameterInfos(methodInfo);
             object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
             return methodInfo.Invoke(this.ServiceEntity, parameterValueList);
         }

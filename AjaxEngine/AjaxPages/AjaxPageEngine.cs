@@ -107,7 +107,7 @@ namespace AjaxEngine.AjaxPages
             MethodInfo methodInfo = MethodFactory.GetMethodInfo(this.Page.GetType(), methodName);
             if (methodInfo != null && this.IsAjaxMethod(methodInfo))
             {
-                ParameterInfo[] pareameterInfos = ParameterFactory.GetPropertyInfo(methodInfo);
+                ParameterInfo[] pareameterInfos = ParameterFactory.GetParameterInfos(methodInfo);
                 object[] parameterValueList = this.GetEntityParameterValueList(pareameterInfos);
                 return methodInfo.Invoke(this.Page, parameterValueList);
             }
@@ -442,11 +442,20 @@ namespace AjaxEngine.AjaxPages
         }
         public virtual void ShowMessageBox<T>(string text, CallbackHandler<T> callback, T arg)
         {
-            if (!this.IsAjaxMethod(callback.Method))
-                throw new Exception(string.Format("没有找到方法:{0}", callback.Method.Name));
-            string argString = this.JsonSerializer.Serialize(arg);
-            string call = string.Format("{0}.{1}({2});", this.AjaxMethodNamespace, callback.Method.Name, argString);
-            this.ShowMessageBox(text, call);
+            if (callback != null && !this.IsAjaxMethod(callback.Method))
+            {
+                throw new Exception(string.Format("ShowMessageBox 的回调方法 {0} 需要添加 AjaxMethod 特性", callback.Method.Name));
+            }
+            if (callback != null)
+            {
+                string argString = this.JsonSerializer.Serialize(arg);
+                string call = string.Format("{0}.{1}({2});", this.AjaxMethodNamespace, callback.Method.Name, argString);
+                this.ShowMessageBox(text, call);
+            }
+            else
+            {
+                this.ShowMessageBox(text, "");
+            }
         }
         /// <summary>
         /// 在客户端显示一个有“是”和“否”按钮的确认框
@@ -460,13 +469,25 @@ namespace AjaxEngine.AjaxPages
         }
         public virtual void ShowConfirmBox<T>(string text, CallbackHandler<T> okCallback, CallbackHandler<T> cancelCallback, T arg)
         {
-            if (!this.IsAjaxMethod(okCallback.Method))
-                throw new Exception(string.Format("没有找到方法:{0}", okCallback.Method.Name));
-            if (!this.IsAjaxMethod(cancelCallback.Method))
-                throw new Exception(string.Format("没有找到方法:{0}", cancelCallback.Method.Name));
+            if (okCallback != null && !this.IsAjaxMethod(okCallback.Method))
+            {
+                throw new Exception(string.Format("ShowConfirmBox 的回调方法 {0} 需要添加 AjaxMethod 特性", okCallback.Method.Name));
+            }
+            if (cancelCallback != null && !this.IsAjaxMethod(cancelCallback.Method))
+            {
+                throw new Exception(string.Format("ShowConfirmBox 的回调方法 {0} 需要添加 AjaxMethod 特性", cancelCallback.Method.Name));
+            }
             string argString = this.JsonSerializer.Serialize(arg);
-            string okCall = string.Format("{0}.{1}({2});", this.AjaxMethodNamespace, okCallback.Method.Name, argString);
-            string cancelCall = string.Format("{0}.{1}({2});", this.AjaxMethodNamespace, cancelCallback.Method.Name, argString);
+            string okCall = "";
+            string cancelCall = "";
+            if (okCallback != null)
+            {
+                okCall = string.Format("{0}.{1}({2});", this.AjaxMethodNamespace, okCallback.Method.Name, argString);
+            }
+            if (cancelCallback != null)
+            {
+                cancelCall = string.Format("{0}.{1}({2});", this.AjaxMethodNamespace, cancelCallback.Method.Name, argString);
+            }
             this.ShowConfirmBox(text, okCall, cancelCall);
         }
         /// <summary>
@@ -523,18 +544,17 @@ namespace AjaxEngine.AjaxPages
         /// <param name="target">目标窗口</param>
         public virtual void OpenWindow<T1, T2>(string url, string target, string option, T1 arg, CallbackHandler<T2> callback)
         {
-            if (url.Contains("?"))
+            if (callback != null && !this.IsAjaxMethod(callback.Method))
             {
-                url += string.Format("&__dialog_callback={0}.{1}&__dialog_args={2}",
-                    this.AjaxMethodNamespace, callback.Method.Name,
-                    HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
+                throw new Exception(string.Format("OpenWindow 的回调方法 {0} 需要添加 AjaxMethod 特性", callback.Method.Name));
             }
-            else
+            var callbackName = "";
+            if (callback != null)
             {
-                url += string.Format("?__dialog_callback={0}.{1}&__dialog_args={2}",
-                    this.AjaxMethodNamespace, callback.Method.Name,
-                    HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
+                callbackName = string.Format("{0}.{1}", this.AjaxMethodNamespace, callback.Method.Name);
             }
+            url += string.Format((url.Contains("?") ? "&" : "?") + "__dialog_callback={0}&__dialog_args={1}", callbackName,
+                HttpUtility.UrlEncode(this.JsonSerializer.Serialize(arg)));
             this.OpenWindow(url, target, option);
         }
         public virtual T GetWindowArgs<T>()
@@ -549,12 +569,22 @@ namespace AjaxEngine.AjaxPages
         public virtual void ReturnValue(object value)
         {
             string callback = this.Page.Request.QueryString["__dialog_callback"];
-            this.InvokeClientScript(string.Format("var __opener=AjaxEngine.dialog.getOpener();__opener&&__opener.{0}({1});", callback, this.JsonSerializer.Serialize(value)));
+            if (!string.IsNullOrEmpty(callback))
+            {
+                this.InvokeClientScript(string.Format("var __opener=AjaxEngine.dialog.getOpener();__opener&&__opener.{0}({1});", callback, this.JsonSerializer.Serialize(value)));
+            }
         }
         public virtual void CloseWindow()
         {
             this.InvokeClientScript("AjaxEngine.dialog.close();");
         }
+
+        public virtual void ReturnValueAndCloseWindow(object value)
+        {
+            this.ReturnValue(value);
+            this.CloseWindow();
+        }
+
         /// <summary>
         /// 转到指定的url
         /// </summary>

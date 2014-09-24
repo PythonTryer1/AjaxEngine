@@ -34,7 +34,7 @@ namespace AjaxEngine.AjaxHandlers
             this.WebClient.QueryString.Clear();
             if (data != null)
             {
-                foreach (var key in data.GetProperties())
+                foreach (var key in data.GetPropertyInfos())
                 {
                     var propVal = data.GetPropertyValue(key.Name);
                     string val = (propVal is string) ? (string)propVal : Gloabl.Serializer.Serialize(propVal);
@@ -75,7 +75,7 @@ namespace AjaxEngine.AjaxHandlers
             NameValueCollection postData = new NameValueCollection();
             if (data != null)
             {
-                foreach (var key in data.GetProperties())
+                foreach (var key in data.GetPropertyInfos())
                 {
                     var propVal = data.GetPropertyValue(key.Name);
                     string val = (propVal is string) ? (string)propVal : Gloabl.Serializer.Serialize(propVal);

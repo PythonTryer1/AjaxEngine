@@ -264,6 +264,7 @@
     <Compile Include="Json\Utilities\TypeExtensions.cs" />
     <Compile Include="Json\Utilities\ValidationUtils.cs" />
     <Compile Include="Json\WriteState.cs" />
+    <Compile Include="Reflection\AttributeFactory.cs" />
     <Compile Include="Utils\AjaxMethodAttribute.cs" />
     <Compile Include="Utils\Const.cs" />
     <Compile Include="Utils\PageAgentBuilder.cs" />
