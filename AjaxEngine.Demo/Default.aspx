@@ -62,6 +62,6 @@
         $("#loading").hide();
     };
     </script>
-    <!--script src="Handler1.ashx?client-script=core,agent"></script-->
+ 
 </body>
 </html>
